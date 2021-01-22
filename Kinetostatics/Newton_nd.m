@@ -3,11 +3,11 @@ function xsolve=Newton_nd(f,Jacob,x0,TOL)
     % Jacob返回n*n矩阵
     % x是n*1列向量
     
-    x(:,1)=x0;
+    x(:,1)=x0';
     k=1;
     while(1)
-        J=Jacob(x(:,k));
-        b=f(x(:,k));
+        J=Jacob(x(:,k)');
+        b=f(x(:,k)');
         delta=-J\b;
         x(:,k+1)=x(:,k)+delta;
         k=k+1;
@@ -16,4 +16,5 @@ function xsolve=Newton_nd(f,Jacob,x0,TOL)
         end
     end
     xsolve=x(:,end);
+    xsolve=xsolve';
 end
