@@ -8,7 +8,7 @@ function plot_pos(w_all,q_all,g0,delta,theta_solve)
 
     %得到整个杆的位姿
     pos=[0;0];
-    pos=[pos,[q_all(1,2);q_all(2,2)]];
+    pos=[pos,[q_all(1,1);q_all(2,1)]];
     for i =2:length(theta)
         g0i=[eye(3),[(i-0.5)*delta;0;0];0,0,0,1];
         [gsti,~]=exp_fkine(w_all(:,1:i-1),q_all(:,1:i-1),g0i,theta(:,1:i-1));

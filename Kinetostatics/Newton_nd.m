@@ -12,6 +12,7 @@ function xsolve=Newton_nd(f,Jacob,x0,TOL)
         x(:,k+1)=x(:,k)+delta;
         k=k+1;
         if(norm(x(:,k)-x(:,k-1))<TOL)
+%         if(norm(f(x(:,k)'))<TOL)
             break;
         end
     end
