@@ -1,4 +1,4 @@
-function r=cal_constraint(I,E,n,gt,x)
+function JACOBIANs=Jacob_constraint(I,E,n,x)
     % x: L F theta
     L=x(1);
     F=x(end-5:end);
@@ -29,19 +29,17 @@ function r=cal_constraint(I,E,n,gt,x)
     g0=[eye(3),[L;0;0];0,0,0,1];
     
     jacobs=exp_jacob_simple(w_all,q_all,theta);
-    [g,~]=exp_fkine(w_all,q_all,g0,theta); 
     
-    tau=K*theta'-transpose(jacobs)*F';
     
-    error=logm(inv(gt)*g);
-    e(1:3,1)=error(1:3,4);
-    e(4,1)=-error(2,3);
-    e(5,1)=error(1,3);
-    e(6,1)=-error(1,2);
+    J_L=cal_J_L(w_all,q_all,x);
+    K_L=cal_K_L(I,E,n,x);
+    K_J=-partial_J_theta(w_all,q_all,theta,jacobs,F');
     
-    fx=[1;0;0;0;0;0]'*F';
-    
-%     r=norm([tau;e;fx]);
-    r=[e;tau;fx];
-    
+    JACOBIANs=zeros(length(x));
+    JACOBIANs(1:6,1)=J_L;
+    JACOBIANs(1:6,2:end-6)=jacobs;
+    JACOBIANs(7:end-1,1)=K_L;
+    JACOBIANs(7:end-1,2:end-6)=K+K_J;
+    JACOBIANs(7:end-1,end-5:end)=-transpose(jacobs);
+    JACOBIANs(end,end-5:end)=[1 0 0 0 0 0];
 end

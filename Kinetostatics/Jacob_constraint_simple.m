@@ -1,8 +1,7 @@
-function r=cal_constraint(I,E,n,gt,x)
-    % x: L F theta
-    L=x(1);
+function JACOBIANs=Jacob_constraint_simple(L,I,E,n,x)
+    % x: theta F
     F=x(end-5:end);
-    theta=x(2:end-6);
+    theta=x(1:end-6);
 
     %微元的长度
     delta=L/n;
@@ -19,6 +18,7 @@ function r=cal_constraint(I,E,n,gt,x)
         w_all=[w_all,[0;0;1]];
     end
 
+
     %所有的q向量构成矩阵
     q_all=zeros(3,n);
     for i=1:n
@@ -29,19 +29,11 @@ function r=cal_constraint(I,E,n,gt,x)
     g0=[eye(3),[L;0;0];0,0,0,1];
     
     jacobs=exp_jacob_simple(w_all,q_all,theta);
-    [g,~]=exp_fkine(w_all,q_all,g0,theta); 
     
-    tau=K*theta'-transpose(jacobs)*F';
+    K_J=-partial_J_theta(w_all,q_all,theta,jacobs,F');
     
-    error=logm(inv(gt)*g);
-    e(1:3,1)=error(1:3,4);
-    e(4,1)=-error(2,3);
-    e(5,1)=error(1,3);
-    e(6,1)=-error(1,2);
-    
-    fx=[1;0;0;0;0;0]'*F';
-    
-%     r=norm([tau;e;fx]);
-    r=[e;tau;fx];
-    
+    JACOBIANs=zeros(length(x));
+    JACOBIANs(1:6,1:n)=jacobs;
+    JACOBIANs(7:end,1:n)=K+K_J;
+    JACOBIANs(7:end,n+1:end)=-transpose(jacobs);
 end

@@ -8,7 +8,7 @@ function xsolve=Newton_nd(f,Jacob,x0,TOL)
     while(1)
         J=Jacob(x(:,k)');
         b=f(x(:,k)');
-        delta=-J\b;
+        delta=-pinv(J)*b;
         x(:,k+1)=x(:,k)+delta;
         k=k+1;
         if(norm(x(:,k)-x(:,k-1))<TOL)

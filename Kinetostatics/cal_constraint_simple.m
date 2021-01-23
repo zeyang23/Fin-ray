@@ -1,8 +1,7 @@
-function r=cal_constraint(I,E,n,gt,x)
-    % x: L F theta
-    L=x(1);
+function r=cal_constraint_simple(L,I,E,n,gt,x)
+    % x: theta F
     F=x(end-5:end);
-    theta=x(2:end-6);
+    theta=x(1:end-6);
 
     %微元的长度
     delta=L/n;
@@ -41,7 +40,6 @@ function r=cal_constraint(I,E,n,gt,x)
     
     fx=[1;0;0;0;0;0]'*F';
     
-%     r=norm([tau;e;fx]);
-    r=[e;tau;fx];
+    r=[e;tau];
     
 end

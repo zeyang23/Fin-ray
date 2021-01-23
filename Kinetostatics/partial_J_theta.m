@@ -8,5 +8,3 @@ function A=partial_J_theta(w_all,q_all,theta_all,Jacobs,F)
         end
     end
 end
-        
-    
