@@ -1,6 +1,7 @@
 % 约束下的杆 固定杆长
 % 使用牛顿法。计算了梯度
-% 使用受力下的杆的结果来校验雅可比的正确性
+% 使用受力下的杆的结果来校验雅可比的正确性 来自demo10
+% 如果使用物体雅可比，效果比空间雅可比好很多
 
 clear all;
 clc;
@@ -19,20 +20,20 @@ L0=0.1;
 delta=L0/n;
 
 %目标位姿
-G=load('G.mat');
+G=load('G1.mat');
 gt=G.g_exp;
 
-f=@(x) cal_constraint_simple(L0,I,E,n,gt,x);
+f=@(x) cal_constraint_simple2(L0,I,E,n,gt,x);
 
 x0=zeros(n+6,1);
 
-THETA=load('THETA.mat');
-x0(1:end-6)=THETA.theta_solve;
+THETA=load('THETA1.mat');
+x0(1:end-6)=0*THETA.theta_solve;
 
-load('F.mat');
-x0(end-5:end)=F;
+load('F1.mat');
+x0(end-5:end)=0;
 
-JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
+JACOB=@(x) Jacob_constraint_simple2(L0,I,E,n,x);
 
 TOL=1e-3;
 
@@ -58,7 +59,9 @@ for i=1:n
     q_all(:,i)=[1;0;0]*delta*(i-1/2);
 end
 
-[g_exp,~]=exp_fkine(w_all,q_all,g0,theta_solve);
+[g_solve,~]=exp_fkine(w_all,q_all,g0,theta_solve);
+disp('g_solve')
+disp(g_solve)
 
 %得到整个杆的位姿
 plot_pos(w_all,q_all,g0,delta,theta_solve)

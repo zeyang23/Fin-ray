@@ -26,7 +26,7 @@ c=delta/(E*I);
 K=diag((1/c)*ones(n,1));
 
 %外力
-F=[0;-10;0;0;0;0];
+F=[0;-20;0;0;0;0];
 
 %初始姿态矩阵
 g0=[eye(3),[L;0;0];0,0,0,1];
@@ -65,6 +65,10 @@ disp(error)
 
 %得到整个杆的位姿
 plot_pos(w_all,q_all,g0,delta,theta_solve)
+
+save('G1.mat','g_exp');
+save('Theta1.mat','theta_solve');
+save('F1.mat','F');
 
 rmpath(genpath('.'));
 
