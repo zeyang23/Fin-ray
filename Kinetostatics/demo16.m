@@ -3,6 +3,7 @@
 % 使用受力下的杆的结果来校验雅可比的正确性 来自demo10
 % 如果使用物体雅可比，效果比空间雅可比好很多
 % 问题：如果自己随便指定末端姿态和位置，还是算不出来，必须得是从受力的杆生成的真实结果
+% 尝试逐步逼近目标位姿
 
 clear all;
 clc;
@@ -20,27 +21,14 @@ L0=0.1;
 
 delta=L0/n;
 
-%目标位姿
-G=load('G1.mat');
-gt=G.g_exp;
-
-f=@(x) cal_constraint_simple2(L0,I,E,n,gt,x);
-
-x0=zeros(n+6,1);
-
-THETA=load('THETA1.mat');
-x0(1:end-6)=0*THETA.theta_solve;
-
-load('F1.mat');
-x0(end-5:end)=0;
+theta=180;
+end_pos=[0.5*L0;0.5*L0];
 
 JACOB=@(x) Jacob_constraint_simple2(L0,I,E,n,x);
 
+xsolve=interp_solver2(theta,end_pos,10,n,L0,I,E,JACOB);
+
 TOL=1e-3;
-
-% x_fsolve=fsolve(f,x0);
-
-xsolve=Newton_nd(f,JACOB,x0,TOL);
 
 theta_solve=(xsolve(1:end-6))';
 
