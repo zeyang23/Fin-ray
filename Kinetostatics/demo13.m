@@ -1,5 +1,6 @@
 % 约束下的杆 固定杆长
 % 使用牛顿法。计算了梯度
+% 使用物体雅可比 Jb
 
 clear all;
 clc;
@@ -10,7 +11,7 @@ I=0.25*pi*1e-12;
 E=56*1e9;
 
 %微元数量
-n=50;
+n=10;
 
 %杆的长度
 L0=1;
@@ -18,17 +19,17 @@ L0=1;
 delta=L0/n;
 
 %目标位姿
-gt=[rotz(45/180*pi),[0.6*L0;0.8*L0;0];0,0,0,1];
+gt=[rotz(0/180*pi),[L0;0*L0;0];0,0,0,1];
 
-f=@(x) cal_constraint_simple(L0,I,E,n,gt,x);
+f=@(x) cal_constraint_simple2(L0,I,E,n,gt,x);
 
 x0=zeros(n+6,1);
 
-x0(1:end-6)=linspace(0,pi/20,n);
+x0(1:end-6)=linspace(0,0,n);
 
 x0(end-5:end)=0*ones(6,1);
 
-JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
+JACOB=@(x) Jacob_constraint_simple2(L0,I,E,n,x);
 
 TOL=1e-3;
 

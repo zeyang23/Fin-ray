@@ -1,5 +1,6 @@
 % 约束下的杆 固定杆长
 % 使用牛顿法。计算了梯度
+% 使用受力下的杆的结果来校验雅可比的正确性
 
 clear all;
 clc;
@@ -13,20 +14,23 @@ E=56*1e9;
 n=50;
 
 %杆的长度
-L0=1;
+L0=0.1;
 
 delta=L0/n;
 
 %目标位姿
-gt=[rotz(45/180*pi),[0.6*L0;0.8*L0;0];0,0,0,1];
+G=load('G.mat');
+gt=G.g_exp;
 
 f=@(x) cal_constraint_simple(L0,I,E,n,gt,x);
 
 x0=zeros(n+6,1);
 
-x0(1:end-6)=linspace(0,pi/20,n);
+THETA=load('THETA.mat');
+x0(1:end-6)=THETA.theta_solve;
 
-x0(end-5:end)=0*ones(6,1);
+load('F.mat');
+x0(end-5:end)=F;
 
 JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
 
