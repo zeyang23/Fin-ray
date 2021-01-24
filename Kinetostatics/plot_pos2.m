@@ -1,4 +1,4 @@
-function plot_pos(w_all,q_all,g0,delta,theta_solve)
+function plot_pos2(w_all,q_all,g0,delta,theta_solve,L0)
     theta=zeros(1,length(theta_solve));
     for k=1:length(theta)
         theta(k)=theta_solve(k);
@@ -28,4 +28,6 @@ function plot_pos(w_all,q_all,g0,delta,theta_solve)
     location_y=[end_pos(2),end_pos(2)];
     quiver(location_x,location_y,new_x,new_y,0.05)
     axis equal
+    
+    axis([0,L0,-0.2*L0,0.6*L0])
 end
