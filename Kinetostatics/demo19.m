@@ -26,15 +26,18 @@ L0=1;
 delta=L0/n;
 
 %Ä¿±êÎ»×Ë
-gt=[rotz(45),[0.5*L0;0.5*L0;0];0,0,0,1];
+gt=[rotz(100.5),[0.5*L0;0.5*L0;0];0,0,0,1];
 
 f=@(x) cal_constraint_simple(L0,I,E,n,gt,x);
 
-x0=zeros(n+6,1);
+% x0=zeros(n+6,1);
+% 
+% x0(1:end-6)=linspace(0,0,n);
+% 
+% x0(end-5:end)=0*ones(6,1);
 
-x0(1:end-6)=linspace(0,0,n);
-
-x0(end-5:end)=0*ones(6,1);
+load('x_demo13.mat')
+x0=xsolve;
 
 JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
 

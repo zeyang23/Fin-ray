@@ -6,6 +6,9 @@ function xsolve=Newton_nd(f,Jacob,x0,TOL)
     x(:,1)=x0';
     k=1;
     while(1)
+        if k>5000
+            error("can not converge")
+        end
         J=Jacob(x(:,k)');
         b=f(x(:,k)');
         delta=-pinv(J)*b;

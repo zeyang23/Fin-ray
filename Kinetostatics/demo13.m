@@ -22,7 +22,7 @@ L0=1;
 delta=L0/n;
 
 %Ä¿±êÎ»×Ë
-gt=[rotz(45),[0.5*L0;0.5*L0;0];0,0,0,1];
+gt=[rotz(100),[0.5*L0;0.5*L0;0];0,0,0,1];
 
 f=@(x) cal_constraint_simple2(L0,I,E,n,gt,x);
 
@@ -39,6 +39,7 @@ TOL=1e-3;
 % x_fsolve=fsolve(f,x0);
 
 xsolve=Newton_nd(f,JACOB,x0,TOL);
+save('x_demo13.mat','xsolve')
 
 theta_solve=(xsolve(1:end-6))';
 

@@ -28,6 +28,7 @@ function r=cal_constraint_simple(L,I,E,n,gt,x)
     g0=[eye(3),[L;0;0];0,0,0,1];
     
     jacobs=exp_jacob_simple(w_all,q_all,theta);
+    
     [g,~]=exp_fkine(w_all,q_all,g0,theta); 
     
     tau=K*theta'-transpose(jacobs)*F';
@@ -37,8 +38,6 @@ function r=cal_constraint_simple(L,I,E,n,gt,x)
     e(4,1)=-error(2,3);
     e(5,1)=error(1,3);
     e(6,1)=-error(1,2);
-    
-    fx=[1;0;0;0;0;0]'*F';
     
     r=[e;tau];
     

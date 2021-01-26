@@ -39,8 +39,6 @@ function r=cal_constraint_simple2(L,I,E,n,gt,x)
     e(5,1)=error(1,3);
     e(6,1)=-error(1,2);
     
-    fx=[1;0;0;0;0;0]'*F';
-    
     r=[e;tau];
     
 end

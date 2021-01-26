@@ -28,7 +28,7 @@ function JACOBIANs=Jacob_constraint_simple(L,I,E,n,x)
     %³õÊ¼×ËÌ¬¾ØÕó
     g0=[eye(3),[L;0;0];0,0,0,1];
     
-    jacobs=exp_jacob_simple(w_all,q_all,theta);
+    [jacobs,~,~]=exp_jacob(w_all,q_all,g0,theta);
     
     K_J=-partial_J_theta(w_all,q_all,theta,jacobs,F');
     
