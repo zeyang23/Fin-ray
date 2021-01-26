@@ -26,7 +26,7 @@ function plot_pos2(w_all,q_all,g0,delta,theta_solve,L0)
     end_pos=g_exp(1:2,4);
     location_x=[end_pos(1),end_pos(1)];
     location_y=[end_pos(2),end_pos(2)];
-    quiver(location_x,location_y,new_x,new_y,0.05)
+    quiver(location_x,location_y,new_x,new_y,0.05*L0)
     axis equal
     
     axis([0,L0,-0.2*L0,0.6*L0])
