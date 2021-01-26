@@ -4,6 +4,7 @@
 % 如果使用物体雅可比，效果比空间雅可比好很多
 % 问题：如果自己随便指定末端姿态和位置，还是算不出来，必须得是从受力的杆生成的真实结果
 % 尝试逐步逼近目标位姿
+% 21.01.26更新，修正了bug，逐步逼近的N不宜取太大
 
 clear all;
 clc;
@@ -17,16 +18,18 @@ E=56*1e9;
 n=50;
 
 %杆的长度
-L0=0.1;
+L0=1;
 
 delta=L0/n;
 
-theta=180;
+theta=120;
 end_pos=[0.5*L0;0.5*L0];
 
 JACOB=@(x) Jacob_constraint_simple2(L0,I,E,n,x);
 
-xsolve=interp_solver2(theta,end_pos,10,n,L0,I,E,JACOB);
+N=3;
+
+xsolve=interp_solver2(theta,end_pos,N,n,L0,I,E,JACOB);
 
 TOL=1e-3;
 

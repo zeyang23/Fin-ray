@@ -9,7 +9,7 @@ function x=interp_solver2(theta,end_pos,N,n,L0,I,E,Jacob)
     for i=1:N
         THETA=theta_series(i);
         ENDPOS=endpos_series(:,i);
-        gt=[rotz(THETA/180*pi),[ENDPOS;0];0,0,0,1];
+        gt=[rotz(THETA),[ENDPOS;0];0,0,0,1];
         
         f=@(x) cal_constraint_simple2(L0,I,E,n,gt,x);
         
