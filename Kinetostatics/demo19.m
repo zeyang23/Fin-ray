@@ -14,30 +14,35 @@ clc;
 addpath(genpath('.'));
 
 %材料的物理参数
-I=0.25*pi*1e-12;
-E=56*1e9;
+wid=5e-3;
+thi=1e-3;
+I=1/12*thi.^3*wid;
+E=197*1e9;
 
 %微元数量
-n=50;
+n=20;
 
 %杆的长度
-L0=1;
+L0=0.2;
 
 delta=L0/n;
 
 %目标位姿
-gt=[rotz(100.5),[0.5*L0;0.5*L0;0];0,0,0,1];
+theta=60; % 角度制
+
+%目标位姿
+gt=[rotz(theta),[0.6*L0;0.6*L0;0];0,0,0,1];
 
 f=@(x) cal_constraint_simple(L0,I,E,n,gt,x);
 
-% x0=zeros(n+6,1);
-% 
-% x0(1:end-6)=linspace(0,0,n);
-% 
-% x0(end-5:end)=0*ones(6,1);
+x0=zeros(n+6,1);
 
-load('x_demo13.mat')
-x0=xsolve;
+x0(1:end-6)=linspace(0,0,n);
+
+x0(end-5:end)=0*ones(6,1);
+
+% load('x_demo13.mat')
+% x0=xsolve;
 
 JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
 

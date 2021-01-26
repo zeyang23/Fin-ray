@@ -33,7 +33,7 @@ function r=cal_constraint_simple(L,I,E,n,gt,x)
     
     tau=K*theta'-transpose(jacobs)*F';
     
-    error=logm(inv(gt)*g);
+    error=logm(g/gt);
     e(1:3,1)=error(1:3,4);
     e(4,1)=-error(2,3);
     e(5,1)=error(1,3);

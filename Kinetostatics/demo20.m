@@ -23,11 +23,11 @@ N=20;
 
 end_pos=[0.6*L0;0.6*L0];
 
-JACOB=@(x) Jacob_constraint_simple2(L0,I,E,n,x);
+JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
 
-x_all=interp_solver3(theta,end_pos,N,n,L0,I,E,JACOB);
+x_all=interp_solver(theta,end_pos,N,n,L0,I,E,JACOB);
 
-JACOB=@(x) Jacob_constraint_simple2(L0,I,E,n,x);
+JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
 
 
 %³õÊ¼×ËÌ¬¾ØÕó
