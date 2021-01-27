@@ -5,8 +5,10 @@ clc;
 addpath(genpath('.'));
 
 %材料的物理参数
-I=0.25*pi*1e-12;
-E=56*1e9;
+wid=5e-3;
+thi=1e-3;
+I=1/12*thi.^3*wid;
+E=197*1e9;
 
 %微元数量
 n=50;
@@ -23,11 +25,11 @@ N=20;
 
 end_pos=[0.6*L0;0.6*L0];
 
-JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
+JACOB=@(x) Jacob_constraint_simple2(L0,I,E,n,x);
 
-x_all=interp_solver(theta,end_pos,N,n,L0,I,E,JACOB);
+x_all=interp_solver3(theta,end_pos,N,n,L0,I,E,JACOB);
 
-JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
+JACOB=@(x) Jacob_constraint_simple2(L0,I,E,n,x);
 
 
 %初始姿态矩阵
