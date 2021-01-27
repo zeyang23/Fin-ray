@@ -15,7 +15,7 @@ function x_all=interp_solver(theta,end_pos,N,n,L0,I,E,Jacob)
         f=@(x) cal_constraint_simple(L0,I,E,n,gt,x);
         
         xsolve=Newton_nd(f,Jacob,x0,TOL);
-        x0=xsolve;
+%         x0=xsolve;
         x_all(N-i+1,:)=xsolve;
     end
     

@@ -20,7 +20,7 @@ I=1/12*thi.^3*wid;
 E=197*1e9;
 
 %微元数量
-n=20;
+n=50;
 
 %杆的长度
 L0=0.2;
@@ -46,7 +46,7 @@ x0(end-5:end)=0*ones(6,1);
 
 JACOB=@(x) Jacob_constraint_simple(L0,I,E,n,x);
 
-TOL=1e-3;
+TOL=1e-7;
 
 % x_fsolve=fsolve(f,x0);
 
@@ -73,6 +73,6 @@ end
 [g_exp,~]=exp_fkine(w_all,q_all,g0,theta_solve);
 
 %得到整个杆的位姿
-plot_pos(w_all,q_all,g0,delta,theta_solve)
+plot_pos2(w_all,q_all,g0,delta,theta_solve,L0)
 
 rmpath(genpath('.'));

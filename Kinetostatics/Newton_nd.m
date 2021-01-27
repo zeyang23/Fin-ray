@@ -14,10 +14,10 @@ function xsolve=Newton_nd(f,Jacob,x0,TOL)
         delta=-pinv(J)*b;
         x(:,k+1)=x(:,k)+delta;
         k=k+1;
-        if(norm(x(:,k)-x(:,k-1))<TOL)
-%         if(norm(f(x(:,k)'))<TOL)
+%         if(norm(x(:,k)-x(:,k-1))<TOL)
+        if(norm(f(x(:,k)'))<TOL)
             fprintf('Newton Method converge: iteration = %d\n',k-1)
-            fprintf('norm(e) = %f\n',norm(f(x(:,k)')))
+            fprintf('norm(e) = %E\n',norm(f(x(:,k)')))
             break;
         end
     end

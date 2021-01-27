@@ -29,5 +29,4 @@ function plot_pos2(w_all,q_all,g0,delta,theta_solve,L0)
     quiver(location_x,location_y,new_x,new_y,0.05*L0)
     axis equal
     
-    axis([0,L0,-0.2*L0,0.6*L0])
 end
