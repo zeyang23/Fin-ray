@@ -159,7 +159,7 @@ classdef flexRod < handle
        function Newton_conv(obj,TOL)
             k=1;
             while(1)
-                if k>500
+                if k>1000
                     error("can not converge")
                 end
                 J=cal_Jacob_conv(obj);
@@ -214,7 +214,7 @@ classdef flexRod < handle
             JACOBIANs(1:6,1)=obj.conv_J_L;
             JACOBIANs(1:6,2:end-6)=obj.conv_jacobs;
             JACOBIANs(7:end-1,1)=obj.conv_K_L;
-            JACOBIANs(7:end-1,2:end-6)=obj.conv_K_theta+obj.conv_K_J;
+            JACOBIANs(7:end-1,2:end-6)=obj.conv_K_theta+0*obj.conv_K_J;
             JACOBIANs(7:end-1,end-5:end)=-transpose(obj.conv_jacobs);
             
             theta=obj.end_pos(3)/180*pi;

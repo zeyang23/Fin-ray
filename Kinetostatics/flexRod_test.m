@@ -17,4 +17,7 @@ RodA.init_exp;
 TOL=1e-6;
 RodA.Newton_conv(TOL);
 RodA.plot_pos_conv;
+
+
+fprintf('\nL')
 disp(RodA.Ltotal)
