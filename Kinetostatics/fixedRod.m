@@ -34,23 +34,19 @@ classdef fixedRod < handle
         conv_w_all;
         conv_xi_all; % 6*n列向量
         conv_xihat_all; % 4*4n列向量
-        conv_theta;  % n*1列向量 设置为列向量是为了方便用牛顿法处理
+        conv_g0;
+        
+        conv_theta;  % n*1列向量 设置为列向量是为了方便用牛顿法处理 ！注意是弧度制
+        conv_F; % 末端的约束力 6*1列向量
         
         conv_g;
         conv_jacobs;
-        
-        conv_g0;
-        
-        conv_F; % 末端的约束力 6*1列向量
-        
         conv_K_J;
         
-        % 实际的 指数坐标所需参量
-        q_all;
-        w_all;
-        xi_all; % 6*n列向量
-        xihat_all; % 4*4n列向量
-        theta;  % n*1列向量 设置为列向量是为了方便用牛顿法处理
+        conv_pos_all % 所有n+2个点的坐标 2*(n+2)
+        
+        % 实际的
+        pos_all; % 所有n+2个点的坐标 2*(n+2)
     end
     
     methods
@@ -122,6 +118,7 @@ classdef fixedRod < handle
             obj.conv_g=obj.exp_fkine(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta);
             obj.conv_K_J=-obj.partial_J_theta(obj.conv_w_all,obj.conv_q_all,obj.conv_jacobs,obj.conv_F);
        end
+  
         
        %% 牛顿法求解
        function Newton_conv(obj,TOL)
@@ -310,7 +307,80 @@ classdef fixedRod < handle
             quiver(location_x,location_y,new_x,new_y,0.05*obj.Ltotal)
             axis equal
 
-        end
+       end
+       
+       function plot_pos(obj)
+            theta_solve=obj.conv_theta;
+            Theta=zeros(1,length(theta_solve));
+            for k=1:length(Theta)
+                Theta(k)=theta_solve(k);
+            end
+
+            g_exp=obj.conv_g;
+
+            %得到整个杆的位姿
+            pos=[0;0];
+            pos=[pos,[obj.conv_q_all(1,1);obj.conv_q_all(2,1)]];
+            for i =2:length(Theta)
+                g0i=[eye(3),[(i-0.5)*obj.seg_length;0;0];0,0,0,1];
+                gsti=obj.exp_fkine(obj.conv_w_all(:,1:i-1),obj.conv_q_all(:,1:i-1),g0i,Theta(:,1:i-1));
+                pos=[pos,gsti(1:2,4)];
+            end
+            pos=[pos,g_exp(1:2,4)];
+            
+            for j=1:length(pos)
+                R=rotz(obj.start_pos(3));
+                pos(:,j)=R(1:2,1:2)*pos(:,j)+obj.start_pos(1:2);
+            end
+
+            plot(pos(1,:),pos(2,:),'-o','MarkerSize',2)
+            
+            hold on
+            axis equal
+            
+            g_exp(1:3,1:3)=rotz(obj.start_pos(3))*g_exp(1:3,1:3);
+            g_exp(1:2,4)=pos(:,end);
+
+            new_xy=g_exp(1:2,1:2)*[1 0;0 1];
+            new_x=new_xy(1,:);
+            new_y=new_xy(2,:);
+            End_pos=g_exp(1:2,4);
+            location_x=[End_pos(1),End_pos(1)];
+            location_y=[End_pos(2),End_pos(2)];
+            quiver(location_x,location_y,new_x,new_y,0.05*obj.Ltotal)
+       end
+       
+
+       %% 获得所有点的坐标
+       function cal_pos_all(obj)
+            theta_solve=obj.conv_theta;
+            Theta=zeros(1,length(theta_solve));
+            for k=1:length(Theta)
+                Theta(k)=theta_solve(k);
+            end
+
+            g_exp=obj.conv_g;
+
+            %得到整个杆的位姿
+            pos=[0;0];
+            pos=[pos,[obj.conv_q_all(1,1);obj.conv_q_all(2,1)]];
+            for i =2:length(Theta)
+                g0i=[eye(3),[(i-0.5)*obj.seg_length;0;0];0,0,0,1];
+                gsti=obj.exp_fkine(obj.conv_w_all(:,1:i-1),obj.conv_q_all(:,1:i-1),g0i,Theta(:,1:i-1));
+                pos=[pos,gsti(1:2,4)];
+            end
+            pos=[pos,g_exp(1:2,4)];
+            
+            obj.conv_pos_all=pos;
+            
+            for j=1:length(pos)
+                R=rotz(obj.start_pos(3));
+                pos(:,j)=R(1:2,1:2)*pos(:,j)+obj.start_pos(1:2);
+            end
+            
+            obj.pos_all=pos;
+                 
+       end
         
     end
 end
