@@ -171,7 +171,7 @@ classdef flexRod < handle
                 obj.conv_theta=obj.conv_theta+delta(2:end-6);
                 obj.conv_F=obj.conv_F+delta(end-5:end);
 
-                update_conv(obj);
+                obj.update_conv;
                 
                 k=k+1;
         %         if(norm(x(:,k)-x(:,k-1))<TOL)
@@ -244,7 +244,7 @@ classdef flexRod < handle
             H_series(1:6,1:6)=eye(6);
 
             for i = 2:n+1
-                H_series(:,6*i-5:6*i)=adjoint(obj.mult(xihat_all(1:4,1:4*i-4),Theta(i-1)));
+                H_series(:,6*i-5:6*i)=obj.adjoint(obj.mult(xihat_all(1:4,1:4*i-4),Theta(i-1)));
             end
             
             xihat_n=logm(obj.conv_g0);
