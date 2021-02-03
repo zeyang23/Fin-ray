@@ -107,7 +107,7 @@ classdef fixedRod < handle
             end
            
             obj.conv_theta=zeros(obj.n_seg,1);
-            [obj.conv_jacobs,~]=exp_jacob(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta);
+            [obj.conv_jacobs,~]=obj.exp_jacob(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta);
             obj.conv_g=obj.exp_fkine(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta); 
             
             obj.conv_F=zeros(6,1);
@@ -118,7 +118,7 @@ classdef fixedRod < handle
         
        %% 更新conv下的参数
        function update_conv(obj)
-            [obj.conv_jacobs,~]=exp_jacob(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta);
+            [obj.conv_jacobs,~]=obj.exp_jacob(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta);
             obj.conv_g=obj.exp_fkine(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta);
             obj.conv_K_J=-obj.partial_J_theta(obj.conv_w_all,obj.conv_q_all,obj.conv_jacobs,obj.conv_F);
        end
@@ -179,7 +179,7 @@ classdef fixedRod < handle
         end
         
         function A=partial_J_theta(obj,w_all,q_all,Jacobs,F)
-            xi_a=[-cha(w_all,q_all);w_all];
+            xi_a=[-obj.cha(w_all,q_all);w_all];
             n=size(xi_a,2);
             A=zeros(n,n);
             for J=2:n
@@ -194,8 +194,8 @@ classdef fixedRod < handle
         function [jacob0,jacobe] = exp_jacob(obj,w_all,q_all,g0,theta_all)
             n=length(theta_all);
             jacob0=zeros(6,size(w_all,2));
-            xi_hat_all=hight(w_all,q_all);                          %将R^6→se(3)
-            xi_a=[-cha(w_all,q_all);w_all];
+            xi_hat_all=obj.hight(w_all,q_all);                          %将R^6→se(3)
+            xi_a=[-obj.cha(w_all,q_all);w_all];
 
             mat_A=zeros(4,4*n);
             mat_A(:,1:4)=eye(4);
