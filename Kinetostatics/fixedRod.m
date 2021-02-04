@@ -1,4 +1,7 @@
 % Class for fixed constrained Rod
+% 21-02-04发现问题，当前末端只能在起始段右上方，即第一象限，如果在其他象限，会无法像预料的一样求解。
+% 因为原点处没有关节，第一个关节在x轴正半轴上。说明图见fixedRod_02_04.jpg
+
 classdef fixedRod < handle
     % 基准平面为xy平面
     properties
