@@ -13,8 +13,8 @@ n=50;
 
 pos1=[0;0;0];
 
-theta=60;
-pos2=[0.3*L0;0.3*L0;theta];
+theta=45;
+pos2=[0.2*L0;0.2*L0;theta];
 
 N=20;
 theta_series=linspace(theta,120,N);
@@ -25,7 +25,7 @@ F_last=zeros(6,1);
 
 
 for i = 1:N
-    pos2=[0.3*L0;0.3*L0;theta_series(i)];
+    pos2=[0.2*L0;0.2*L0;theta_series(i)];
     RodA = flexRod(E,L0,wid,thi,n,pos1,pos2);
     RodA.init_exp;
     
@@ -43,8 +43,8 @@ for i = 1:N
     
 %     RodA.plot_pos;
 end
-
-RodA = flexRod(E,L0,wid,thi,n,pos1,[0.3*L0;0.3*L0;120]);
+%%
+RodA = flexRod(E,L0,wid,thi,n,pos1,[0.2*L0;0.2*L0;120]);
 RodA.init_exp;
 
 RodA.Ltotal=L_last;
