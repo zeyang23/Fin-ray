@@ -48,9 +48,10 @@ for i = 1:N
     theta_last=RodA.conv_theta;
     F_last=RodA.conv_F;
     
-%     RodA.plot_pos;
+    RodA.plot_pos;
 end
 
+figure
 RodA = flexRod(E,L0,wid,thi,n,pos1,[pos2_xy;theta_end]);
 RodA.init_exp;
 
