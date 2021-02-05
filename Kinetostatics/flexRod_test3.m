@@ -11,13 +11,20 @@ E=197*1e9;
 L0=1;
 n=50;
 
+
 pos1=[0;0;0];
 
-theta=45;
-pos2=[0.2*L0;0.2*L0;theta];
-
+% ²ÎÊý
+theta_start=45;
+theta_end=120;
 N=20;
-theta_series=linspace(theta,120,N);
+pos2_xy=[0.2*L0;0.2*L0];
+pos3=[0.6*L0;0.6*L0;90];
+
+
+
+pos2=[pos2_xy;theta_start];
+theta_series=linspace(theta_start,theta_end,N);
 
 L_last=L0;
 theta_last=zeros(n,1);
@@ -25,7 +32,7 @@ F_last=zeros(6,1);
 
 
 for i = 1:N
-    pos2=[0.2*L0;0.2*L0;theta_series(i)];
+    pos2=[pos2_xy;theta_series(i)];
     RodA = flexRod(E,L0,wid,thi,n,pos1,pos2);
     RodA.init_exp;
     
@@ -43,8 +50,8 @@ for i = 1:N
     
 %     RodA.plot_pos;
 end
-%%
-RodA = flexRod(E,L0,wid,thi,n,pos1,[0.2*L0;0.2*L0;120]);
+
+RodA = flexRod(E,L0,wid,thi,n,pos1,[pos2_xy;theta_end]);
 RodA.init_exp;
 
 RodA.Ltotal=L_last;
@@ -57,8 +64,6 @@ RodA.Newton_conv(TOL);
 RodA.plot_pos;
 
 L_last=L0-RodA.Ltotal;
-
-pos3=[0.6;0.6;90];
 
 RodB=fixedRod(E,L_last,wid,thi,n,pos2,pos3);
 RodB.init_exp;

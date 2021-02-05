@@ -11,7 +11,7 @@ L0=1;
 n=50;
 
 pos1=[0;0;0];
-pos2=[0.3;0.3;60];
+pos2=[0.3*L0;0.3*L0;60];
 RodA = flexRod(E,L0,wid,thi,n,pos1,pos2);
 
 RodA.init_exp;
@@ -25,7 +25,7 @@ disp(RodA.Ltotal)
 
 L_last=L0-RodA.Ltotal;
 
-pos3=[0.6;0.6;90];
+pos3=[0.6*L0;0.6*L0;90];
 
 RodB=fixedRod(E,L_last,wid,thi,n,pos2,pos3);
 RodB.init_exp;
