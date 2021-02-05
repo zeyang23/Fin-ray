@@ -2,6 +2,8 @@
 % 21-02-04发现问题，当前末端只能在起始段右上方，即第一象限，如果在其他象限，会无法像预料的一样求解。
 % 因为原点处没有关节，第一个关节在x轴正半轴上。说明图见fixedRod_02_04.jpg
 
+% 21-02-05 对数求导似乎存在问题。雅可比矩阵是否差一个伴随变换
+
 classdef fixedRod < handle
     % 基准平面为xy平面
     properties
@@ -173,6 +175,7 @@ classdef fixedRod < handle
         function JACOBIANs=cal_Jacob_conv(obj)
 
             JACOBIANs=zeros(6+obj.n_seg);
+%             JACOBIANs(1:6,1:obj.n_seg)=obj.adjoint(inv(obj.conv_gt))*obj.conv_jacobs;
             JACOBIANs(1:6,1:obj.n_seg)=obj.conv_jacobs;
             JACOBIANs(7:end,1:obj.n_seg)=obj.K_theta+obj.conv_K_J;
             JACOBIANs(7:end,obj.n_seg+1:end)=-transpose(obj.conv_jacobs);
