@@ -14,7 +14,7 @@ L0=1;
 n=50;
 
 pos1=[0*L0;0*L0;0];
-pos2=[0.3*L0;-0.3*L0;0];
+pos2=[0.3*L0;0.3*L0;45];
 RodA = flexRod(E,L0,wid,thi,n,pos1,pos2);
 
 RodA.init_exp;

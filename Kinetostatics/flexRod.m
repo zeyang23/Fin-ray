@@ -2,6 +2,8 @@
 % 21-02-04总结，目前有两个主要问题，一个是只能从左下角向右上角求解；
 % 另一个是变长度的收敛性很差，且无法解出弯曲度较大的形状。初值的选取是个很严重的问题。
 % 此外，我无法确定这是不是多解问题。超冗余逆运动学似乎有多解的可能性。
+
+% 21-02-05更新 很神奇，关于求J_L时的探索。原先取theta_n+1为0，现在取theta_n+1为1
 classdef flexRod < handle
     % 基准平面为xy平面
     properties
@@ -231,6 +233,7 @@ classdef flexRod < handle
             Ktheta=diag((obj.E*obj.Iz/obj.seg_length)*ones(obj.n_seg,1));
         end
         
+        
         function KL=cal_K_L(obj)
             obj.seg_length=obj.Ltotal/obj.n_seg;
             KL=-obj.conv_K_theta*obj.conv_theta/obj.Ltotal;
@@ -260,7 +263,7 @@ classdef flexRod < handle
             xihat_all=[xihat_all,xihat_n];
             
             % 第n+1个theta怎么取？？？
-            Theta=[Theta;0];
+            Theta=[Theta;1];
 
             JL=zeros(6,1);
             for i=1:n+1
