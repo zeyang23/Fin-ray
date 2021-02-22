@@ -16,9 +16,9 @@ pos1=[0;0;0];
 
 % ²ÎÊý
 theta_start=45;
-theta_end=120;
+theta_end=90;
 N=20;
-pos2_xy=[0.2*L0;0.2*L0];
+pos2_xy=[0.3*L0;0.3*L0];
 pos3=[0.6*L0;0.6*L0;90];
 
 

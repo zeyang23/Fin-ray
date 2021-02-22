@@ -263,12 +263,22 @@ classdef flexRod < handle
             xihat_all=[xihat_all,xihat_n];
             
             % 第n+1个theta怎么取？？？
+            % 21-02-22更新 第n+1个theta应该取1
             Theta=[Theta;1];
 
             JL=zeros(6,1);
             for i=1:n+1
                 H=H_series(:,6*i-5:6*i);
-                Z=obj.Z_adjoint(xi_all(:,i));
+                
+                % 21-02-22更新 原先的伴随变换写到了Z=obj.Z_adjoint(xi_all(:,i))
+                % 现在已经改为Z=obj.Z_adjoint(xi_all(:,i-1))
+                
+                if i ==1
+                    Z=eye(6);
+                else 
+                    Z=obj.Z_adjoint(xi_all(:,i-1));
+                end
+                
                 A=Theta(i)*eye(6)...
                  +0.5*(4-Theta(i)*sin(Theta(i))-4*cos(Theta(i)))*Z...
                  +0.5*(4*Theta(i)-5*sin(Theta(i))+Theta(i)*cos(Theta(i)))*Z^2 ...
