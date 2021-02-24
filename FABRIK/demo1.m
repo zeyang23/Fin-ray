@@ -1,3 +1,5 @@
+% 原始测试
+
 % 21-02-22 更新 新建FABRIK思路
 % forward and backward reaching inverse kinematics FABRIK
 % 将考虑静力学的模型和纯运动学模型相结合，利用在多机器人课程中学到的瞬时刚性的特点
@@ -15,7 +17,7 @@ n=100;
 L=1;
 
 base=[0,0];
-target=[0,0.5*L];
+target=[0.6*L,0.5*L];
 
 d=L/(n-1)*ones(n-1,1);
 
