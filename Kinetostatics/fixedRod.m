@@ -1,4 +1,7 @@
 % Class for fixed constrained Rod
+% 两端固定约束的柔性板
+
+
 % 21-02-04发现问题，当前末端只能在起始段右上方，即第一象限，如果在其他象限，会无法像预料的一样求解。
 % 因为原点处没有关节，第一个关节在x轴正半轴上。说明图见fixedRod_02_04.jpg
 
@@ -8,55 +11,89 @@ classdef fixedRod < handle
     % 基准平面为xy平面
     properties
         % 材料的几何参数
-        Ltotal;
-        wid;
-        thi;
-        cross_section;
-        Iz; % 转动惯量
+        
+        Ltotal; % 柔性板的总长度
+        wid; % 柔性板的截面长度
+        thi; % 柔性板的截面宽度
+        cross_section; % 柔性板的横截面积
+        Iz; % 截面惯性矩
         
         % 材料的物理参数
+        
         E; % 杨氏模量
         
         % 微元数量与长度
-        n_seg;
-        seg_length;
         
-        % 刚度矩阵
-        K_theta;
+        n_seg; % 微元数量
+        seg_length; % 微元长度
+        
+        
+        K_theta; % 刚度矩阵
+        
         
         % 起点的位置和姿态
-        start_pos; % 3*1列向量 x y theta theta取角度制
+        % 3*1列向量 x y theta theta取角度制
+        
+        start_pos;  % 起点位姿
+        
         
         % 终点的位置和姿态
-        end_pos;   % 3*1列向量 x y theta theta取角度制
+        % 3*1列向量 x y theta theta取角度制
+        
+        end_pos;   % 终点位姿 
+        
         
         % 根据起点得到的转换后的终点位姿
-        conv_end_pos;
-        conv_gt;
+        
+        conv_end_pos; % 在起点坐标系下的位姿
+        conv_gt;  % 在起点坐标系下的齐次变换矩阵
+        
+        
         
         % 转换后的 指数坐标所需参量
-        conv_q_all;
-        conv_w_all;
-        conv_xi_all; % 6*n列向量
-        conv_xihat_all; % 4*4n列向量
-        conv_g0;
         
-        conv_theta;  % n*1列向量 设置为列向量是为了方便用牛顿法处理 ！注意是弧度制
-        conv_F; % 末端的约束力 6*1列向量
         
-        conv_g;
-        conv_jacobs;
-        conv_K_J;
+        conv_q_all; % 在起点坐标系下的关节坐标 
+        conv_w_all; % 在起点坐标系下的转轴向量
         
-        conv_pos_all % 所有n+2个点的坐标 2*(n+2)
         
-        % 实际的
-        pos_all; % 所有n+2个点的坐标 2*(n+2)
+        % 6*n列向量
+        
+        conv_xi_all;  % 在起点坐标系下的所有关节旋量的向量表示
+        
+        
+        % 4*4n列向量
+        
+        conv_xihat_all; % 在起点坐标系下的所有关节旋量的SE(3)表示
+        conv_g0;  % 在起点坐标系下的终点初始位姿
+        
+        
+        % n*1列向量 设置为列向量是为了方便用牛顿法处理 ！注意是弧度制
+        
+        conv_theta;  % 所有关节的转角
+        conv_F; % 在起点坐标系下的终点处的约束力螺旋
+        
+        conv_g; % 在起点坐标系下的终点实际位姿
+        conv_jacobs; % 在起点坐标系下的雅可比矩阵
+        conv_K_J;    % 偏导数项 K_J
+        
+        
+        % 2*(n+2)
+         
+        conv_pos_all % 在起点坐标系下所有点的坐标
+        
+        
+        % 实际的 
+        % 所有n+2个点的坐标 2*(n+2)
+        
+        pos_all;  % 在实际坐标系下所有点的坐标
     end
     
     methods
        %% 构造函数
         function item = fixedRod(E,l,w,h,n,pos1,pos2)
+            % 在初始化时计算必要的参数
+            
         % calculate necessary properties at initialization
             item.E=E;
             item.Ltotal=l;
@@ -76,6 +113,7 @@ classdef fixedRod < handle
         
        %% 初始化conv参数
         function init_exp(obj)
+            % 初始化所有参数
             theta_start=obj.start_pos(3);
             theta_start_rad=theta_start/180*pi;
             delta_x=obj.end_pos(1)-obj.start_pos(1);
@@ -119,6 +157,7 @@ classdef fixedRod < handle
         
        %% 更新conv下的参数
        function update_conv(obj)
+           % 更新必要的参数
             [obj.conv_jacobs,~]=obj.exp_jacob(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta);
             obj.conv_g=obj.exp_fkine(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta);
             obj.conv_K_J=-obj.partial_J_theta(obj.conv_w_all,obj.conv_q_all,obj.conv_jacobs,obj.conv_F);
@@ -127,6 +166,7 @@ classdef fixedRod < handle
         
        %% 牛顿法求解
        function Newton_conv(obj,TOL)
+           % 牛顿法求解器
             k=1;
             while(1)
                 if k>500
@@ -154,6 +194,7 @@ classdef fixedRod < handle
         
        %% 计算约束 在conv坐标系下
        function r=cal_constraint_conv(obj)
+            % 计算f(x)的值
 
 %             [jacobs,~]=obj.exp_jacob(obj.conv_w_all,obj.conv_q_all,obj.conv_g0,obj.conv_theta);
 % 
@@ -173,6 +214,7 @@ classdef fixedRod < handle
         
        %% 计算雅可比矩阵 在conv坐标系下
         function JACOBIANs=cal_Jacob_conv(obj)
+            % 计算牛顿法所需的雅可比矩阵
 
             JACOBIANs=zeros(6+obj.n_seg);
 %             JACOBIANs(1:6,1:obj.n_seg)=obj.adjoint(inv(obj.conv_gt))*obj.conv_jacobs;
@@ -182,6 +224,7 @@ classdef fixedRod < handle
         end
         
         function A=partial_J_theta(obj,w_all,q_all,Jacobs,F)
+            % 计算偏导数项
             xi_a=[-obj.cha(w_all,q_all);w_all];
             n=size(xi_a,2);
             A=zeros(n,n);
@@ -195,6 +238,7 @@ classdef fixedRod < handle
         
        %% 一些功能函数 exp_jacob exp_fkine
         function [jacob0,jacobe] = exp_jacob(obj,w_all,q_all,g0,theta_all)
+            % 计算几何雅可比矩阵
             n=length(theta_all);
             jacob0=zeros(6,size(w_all,2));
             xi_hat_all=obj.hight(w_all,q_all);                          %将R^6→se(3)
@@ -216,6 +260,7 @@ classdef fixedRod < handle
         end
 
         function [xi_all] = hight(obj,w_all,q_all)       %%将R^6→se(3)，并补上垂直叉乘部分
+            % 生成所需的关节旋量
             xi_all=zeros(4,4*size(w_all,2));
             for a=1:size(w_all,2)
                 xi_all(1:3,4*(a-1)+1:4*(a-1)+3)=[0,-w_all(3,a),w_all(2,a);w_all(3,a),0,-w_all(1,a);-w_all(2,a),w_all(1,a),0];
@@ -224,6 +269,7 @@ classdef fixedRod < handle
         end
         
         function [r] = cha(obj,a,b)
+            % 计算叉乘
             r=zeros(3,size(a,2));
             for i=1:size(a,2)
                 hight_a=[0 -a(3,i) a(2,i);a(3,i) 0 -a(1,i);-a(2,i) a(1,i) 0];
@@ -233,6 +279,7 @@ classdef fixedRod < handle
         
         
         function [gi_mult] = mult(obj,xihat_all,theta_all)
+            % 计算正运动学的中间量
             gi_mult=eye(4);
             for a=1:length(theta_all)
                 w=xihat_all(1:3,4*(a-1)+1:4*(a-1)+3);
@@ -243,18 +290,22 @@ classdef fixedRod < handle
             end
         end
 
-        function g_st = exp_fkine(obj,w_all,q_all,g0,theta_all)%正向运动学函数
+        function g_st = exp_fkine(obj,w_all,q_all,g0,theta_all)
+            % 计算正运动学
             xihat=obj.hight(w_all,q_all);                          %将R^6→se(3)
             gi_mult=obj.mult(xihat,theta_all);                     %将se(3)→SE(3)并累乘
             g_st=gi_mult*g0;                                    %初值矩阵相乘
         end
         
         function [adj] = adjoint(obj,A)
+            % 李群的伴随变换
             a=A(1:3,4);ph=[0 -a(3) a(2);a(3) 0 -a(1);-a(2) a(1) 0];
             adj=[A(1:3,1:3),ph*A(1:3,1:3);zeros(3),A(1:3,1:3)];
         end
         
         function B=Z_adjoint(obj,xi)
+            % 李代数的伴随变换
+               
         % 01/26更新，原先的Z_adjoint是错的，是用于[omega;v]的
         % Z_adjoint2用于[v;omega]
         % 01/26更新,Z_adjoint2也是错的，没有和F对应；原文中的F为[m;f]；我用的是[f;m]
@@ -267,11 +318,15 @@ classdef fixedRod < handle
         end
         
         function vec=vex(obj,mat)
+            % 从反对称矩阵得到向量
+            
             % inversed skew-symmetric transform
             vec = [mat(6), -mat(3), mat(2)];
         end
         
         function mat=xev(obj,vec)
+            % 从向量得到反对称矩阵
+            
             % skew-symmetric transform
 
           mat = [0, -vec(3), vec(2)
@@ -282,6 +337,8 @@ classdef fixedRod < handle
         
        %% 可视化工具
        function plot_pos_conv(obj)
+            % 画出柔性板在起点坐标系中的位形
+            
             theta_solve=obj.conv_theta;
             Theta=zeros(1,length(theta_solve));
             for k=1:length(Theta)
@@ -316,6 +373,8 @@ classdef fixedRod < handle
        end
        
        function plot_pos(obj)
+           % 画出柔性板在全局坐标系中的位形
+           
             theta_solve=obj.conv_theta;
             Theta=zeros(1,length(theta_solve));
             for k=1:length(Theta)
@@ -359,6 +418,8 @@ classdef fixedRod < handle
 
        %% 获得所有点的坐标
        function cal_pos_all(obj)
+           % 计算所有点的坐标
+           
             theta_solve=obj.conv_theta;
             Theta=zeros(1,length(theta_solve));
             for k=1:length(Theta)
