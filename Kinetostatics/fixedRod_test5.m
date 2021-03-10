@@ -1,6 +1,10 @@
 % 21-03-08 尝试使用二分搜索的方法求解滑轮约束的情况
 % 问题的难点：难以生成合适的左初值。不一定收敛。可能需要二分法来给定合适的初值
 
+% 待完善：
+% 1 编写前处理模块，生成合适的初值
+% 2 理论推导证明在零点附近，f(l)是单调的
+
 clear
 clc
 
@@ -12,8 +16,8 @@ L0=1;
 n=50;
 
 pos1=[0*L0;0*L0;0];
-pos2=[0.1*L0;0.3*L0;90];
-% pos2=[0.3*L0;0.3*L0;60];
+
+pos2=[0.3*L0;0.3*L0;60];
 
 dist=sqrt((pos1(1)-pos2(1))^2+(pos1(2)-pos2(2))^2);
 
@@ -22,7 +26,9 @@ Lb=1.4*dist;
 
 TOL=0.5e-4; %精确到小数点后6位
 
-Lsolve=Bisection(@f,La,Lb,TOL);
+f=@(L) func(L,pos2);
+
+Lsolve=Bisection(f,La,Lb,TOL);
 
 
 RodA=fixedRod(E,Lsolve,wid,thi,n,pos1,pos2);
@@ -57,15 +63,13 @@ center2y=vec2(2)+pos2y;
 rectangle('Position',[center1x-r,center1y-r,2*r,2*r],'Curvature',[1,1],'linewidth',1,'edgecolor','r')
 rectangle('Position',[center2x-r,center2y-r,2*r,2*r],'Curvature',[1,1],'linewidth',1,'edgecolor','r')
 
-function r=f(L)
+function r=func(L,pos2)
     wid=5e-3;
     thi=1e-3;
     E=197*1e9;
     L0=1;
 
     pos1=[0*L0;0*L0;0];
-%     pos2=[0.3*L0;0.3*L0;60];
-    pos2=[0.1*L0;0.3*L0;90];
     
     Rod = fixedRod(E,L,wid,thi,50,pos1,pos2);
 
