@@ -15,10 +15,10 @@ E=197*1e9;
 L0=1;
 n=50;
 
-% pdes=[0.2*L0;0.2*L0;pi/3];
-pdes=[0.6*L0;0.6*L0;pi/3];
+pdes1=[0.2*L0;0.2*L0;pi/3];
+pdes2=[0.1*L0;0.1*L0;0]; % 评注：这么离谱的形状都解得出来，三角函数真nb
 
-R1=planar_nR(E,L0,wid,thi,n,pdes);
+R1=planar_nR(E,L0,wid,thi,n,pdes1);
 % R1.plot_all
 
 % R1.theta=pi/12*ones(n,1);
