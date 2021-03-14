@@ -25,6 +25,8 @@ classdef planar_nR < handle
         Hessian_xe;
         Hessian_ye;
         
+        partial; % 计算那项奇怪的偏导数
+        
         pe_desired % 3*1
         
         pos_all % (n+2)*2
@@ -126,10 +128,24 @@ classdef planar_nR < handle
             obj.Hessian_ye=Hy;
         end
         
+        function cal_partial(obj)
+            % 注意，调用这个函数前记得先更新Hessian矩阵
+            
+            temp=zeros(obj.n_seg);
+            for i=1:obj.n_seg
+                for j=1:obj.n_seg
+                    temp(i,j)=transpose(obj.F)*[obj.Hessian_xe(j,i);obj.Hessian_ye(j,i);0];
+                end
+            end
+            
+            obj.partial=temp;
+        end
+            
         function update(obj)
             obj.cal_pe;
             obj.cal_Jacobian;
             obj.cal_Hessian;
+            obj.cal_partial;
         end
         
         function r=cal_r(obj)
