@@ -105,3 +105,8 @@ B_pos_all=RB.pos_all;
 A_abs_pos_all=plot_abs_pos(A_pos_all,alpha,[xA,yA]);
 hold on
 B_abs_pos_all=plot_abs_pos(B_pos_all,beta,[xB,yB]);
+
+
+% 保存求解的结果，作为有刚性约束时的初值
+x_init=x;
+save('x_init.mat','x_init')

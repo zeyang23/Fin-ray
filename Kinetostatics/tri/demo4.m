@@ -31,15 +31,37 @@ B=-rotz(beta-alpha);
 nA=50;
 nB=50;
 
-k1=fix(nA/2);
-k2=fix(nB/2);
+
+% 参数的选取
+
+% 第一组成功的参数
+k1=fix(1/4*nA);
+k2=fix(1/4*nB);
+Lcon=3/4*sqrt((xA-xB)^2+(yA-yB)^2);
+Lcon2=2/4*sqrt((xA-xB)^2+(yA-yB)^2);
+LA=0.8*L0;
+% 如果使用无刚性约束时的求解结果作为初值，收敛速度会快一点，399→224
+% 如果再打开partial项，224→62
+
+
+% 第二组成功的参数
+% k1=fix(3/4*nA);
+% k2=fix(3/4*nB);
+% Lcon=2/5*sqrt((xA-xB)^2+(yA-yB)^2);
+% LA=0.6*L0;
+% 惊人的发现：先用无刚性约束时的求解结果作为初值，再打开partial项，收敛速度奇快
+
+% 求解结果很离谱的参数
+% k1=fix(1/2*nA);
+% k2=fix(1/2*nB);
+% Lcon=4/8*sqrt((xA-xB)^2+(yA-yB)^2);
+% LA=0.8*L0;
+% 关掉partial项，用无刚性约束时的求解结果作为初值，能拿到一个很离谱的图
 
 vA=[ones(k1,1);zeros(nA-k1,1)];
 lambdaA=diag(vA);
 vB=[ones(k2,1);zeros(nB-k2,1)];
 lambdaB=diag(vB);
-
-Lcon=1/2*sqrt((xA-xB)^2+(yA-yB)^2);
 
 wid=5e-3;
 thi=1e-3;
@@ -47,7 +69,6 @@ E=197*1e9;
 
 pdes=[0;0;0];
 
-LA=0.8*L0;
 LB=L0;
 
 RA=planar_nR(E,LA,wid,thi,nA,pdes);
@@ -55,7 +76,14 @@ RB=planar_nR(E,LB,wid,thi,nB,pdes);
 
 
 % 牛顿法求解2N+3方程组
+
 x=zeros(nA+nB+5,1);
+
+%尝试使用无刚性约束时的初值
+load('x_init.mat')
+x(1:nA+nB+3)=x_init;
+
+
 TOL=1e-6;
 k=1;
 while(1)
@@ -121,7 +149,7 @@ while(1)
     RA.F=-rotz(-alpha_degree)*[fcon*cos(gamma);fcon*sin(gamma);0];
     RA.cal_partial;
     temp4=lambdaA*RA.partial;
-    J(6:nA+5,1:nA)=RA.K_theta-0*(0*temp3+temp4);
+    J(6:nA+5,1:nA)=RA.K_theta-1*(1*temp3+temp4);
     
     J(6:nA+5,nA+nB+1:nA+nB+3)=-transpose(RA.Jacobian)*B;
     J(6:nA+5,end-1)=-lambdaA*transpose(RA.Jacobian)*(-rotz(-alpha_degree)*[cos(gamma);sin(gamma);0]);
@@ -131,7 +159,7 @@ while(1)
     RB.F=rotz(-beta_degree)*[fcon*cos(gamma);fcon*sin(gamma);0];
     RB.cal_partial;
     temp6=lambdaB*RB.partial;
-    J(nA+6:end,nA+1:nA+nB)=RB.K_theta-0*(0*temp5+temp6);
+    J(nA+6:end,nA+1:nA+nB)=RB.K_theta-1*(1*temp5+temp6);
     
     J(nA+6:end,nA+nB+1:nA+nB+3)=-transpose(RB.Jacobian);
     J(nA+6:end,end-1)=-lambdaB*transpose(RB.Jacobian)*(rotz(-beta_degree)*[cos(gamma);sin(gamma);0]);
