@@ -67,6 +67,20 @@ classdef planar_nR < handle
             obj.pe=[xe;ye;phie];
         end
         
+        function pk=cal_pk(obj,k)
+            xk=0;
+            yk=0;
+            phik=sum(obj.theta(1:k));
+            
+            for i=1:k
+                xk=xk+obj.seg_length*cos(sum(obj.theta(1:i)));
+                yk=yk+obj.seg_length*sin(sum(obj.theta(1:i)));
+            end
+            
+            xk=xk+obj.seg_length/2;
+            pk=[xk;yk;phik];
+        end
+        
         function cal_Jacobian(obj)
             J=zeros(3,obj.n_seg);
             for i=1:obj.n_seg-1
