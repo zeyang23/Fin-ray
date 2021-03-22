@@ -6,6 +6,9 @@
 % 之前的公式搞错了，应该是sum(theta(p1:q1))，而不是theta(q1)-theta(p1)
 % 改回正确的公式后发现效果出奇得好
 
+% 自己手写的Gauss-Newton最小二乘不如fsolve自带的效果好
+% 如果考虑传感器的误差，手写的这个可能对误差不够鲁棒
+
 
 % 生成4个Delta
 clear
