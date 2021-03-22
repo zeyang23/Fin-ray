@@ -1,9 +1,6 @@
 % 测试，通过多于3个传感器的数据反解柔性板的形状
-% 使用fsolve求解最小二乘问题，使用的其实是Levenberg-Marquardt algorithm，和nonlsq中是一样的
-
-% 21-03-22 4个传感器在某些情况下是能求解的
-% 不提供梯度是可以解的，提供梯度后收敛速度显著变快。注意，这里提供的梯度要打开partial项，否则CheckGradient会报错
-% 存在初值敏感性。存在解出来的值相对原始值大幅偏离的可能性。
+% 使用Gauss-Newton算法求解非线性最小二乘问题
+% 初值敏感性非常非常高
 
 % 21-03-22晚上
 % 之前的公式搞错了，应该是sum(theta(p1:q1))，而不是theta(q1)-theta(p1)
@@ -78,28 +75,18 @@ end
 
 % 使用fsolve求解
 
-x0=zeros(n+3,1);
-options = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',true);
+x=zeros(n+3,1);
+x(1:n)=linspace(0,0.05,n);
 
-f=@(x) myfun(x,E,L0,wid,thi,n,D1,D2,D3,D4,Delta1,Delta2,Delta3,Delta4);
-[x,fval,exitflag,output] = fsolve(f,x0,options);
-% [x,fval,exitflag,output]= fsolve(f,x0);
+TOL=1e-6;
+k=1;
 
-theta_real=R1.theta;
-x_real=[R1.theta;R1.F];
+Rod=planar_nR(E,L0,wid,thi,n,[0;0;0]);
 
-disp(norm(x(1:n)-theta_real));
-disp(norm(x-x_real));
-
-Rod_solve=planar_nR(E,L0,wid,thi,n,pdes);
-Rod_solve.theta=x(1:n);
-Rod_solve.F=x(end-2:end);
-
-Rod_solve.update;
-Rod_solve.plot_all;
-
-function [f,grad] = myfun(x,E,L0,wid,thi,n,D1,D2,D3,D4,Delta1,Delta2,Delta3,Delta4)
-    Rod=planar_nR(E,L0,wid,thi,n,[0;0;0]);
+while(1)
+    if k>500
+        error("can not converge")
+    end
     
     theta=zeros(n,1);
     F=zeros(3,1);
@@ -118,17 +105,44 @@ function [f,grad] = myfun(x,E,L0,wid,thi,n,D1,D2,D3,D4,Delta1,Delta2,Delta3,Delt
     r4=D3*theta-Delta3;
     r5=D4*theta-Delta4;
     
-    f=[r1;r2;r3;r4;r5];
+    r=[r1;r2;r3;r4;r5];
+    norm(r)
     
-    if nargout > 1
-        J=zeros(n+3);
-    
-        J(1:n,1:n)=Rod.K_theta-1*Rod.partial;
-        J(1:n,n+1:end)=-transpose(Rod.Jacobian);
-        J(n+1,1:n)=D1;
-        J(n+2,1:n)=D2;
-        J(n+3,1:n)=D3;
-        J(n+4,1:n)=D4;
-        grad=J;
+    if(norm(r)<TOL)
+        fprintf('Newton Method converge: iteration = %d\n',k-1)
+        fprintf('norm(e) = %E\n',norm(r))
+        break;
     end
+    
+    J=zeros(n+4,n+3);
+    
+    J(1:n,1:n)=Rod.K_theta-1*Rod.partial;
+    J(1:n,n+1:end)=-transpose(Rod.Jacobian);
+    J(n+1,1:n)=D1;
+    J(n+2,1:n)=D2;
+    J(n+3,1:n)=D3;
+    J(n+4,1:n)=D4;
+    
+    
+    delta=-pinv(transpose(J)*J)*(transpose(J)*r);
+    
+    x=x+delta;
+
+    k=k+1;
 end
+
+Rod.plot_all
+
+
+theta_real=R1.theta;
+x_real=[R1.theta;R1.F];
+
+disp(norm(x(1:n)-theta_real));
+disp(norm(x-x_real));
+
+Rod_solve=planar_nR(E,L0,wid,thi,n,pdes);
+Rod_solve.theta=x(1:n);
+Rod_solve.F=x(end-2:end);
+
+Rod_solve.update;
+Rod_solve.plot_all;

@@ -7,6 +7,10 @@
 % 不支持使用zeros(n+3,1)作为初值；
 % partial项应该打开
 
+% 21-03-22晚上
+% 之前的公式搞错了，应该是sum(theta(p1:q1))，而不是theta(q1)-theta(p1)
+% 改回正确的公式后发现效果出奇得好
+
 
 % 生成3个Delta
 clear
@@ -19,10 +23,19 @@ E=197*1e9;
 L0=1;
 n=40;
 
-pdes=[0.6*L0;0.6*L0;2/3*pi];   % 这组参数的效果非常好
+
+% 错误的记录 之前的条件写错了
+% pdes=[0.6*L0;0.6*L0;2/3*pi];   % 这组参数的效果非常好
 % pdes=[0.6*L0;0.6*L0;1/3*pi];   % 这组参数求出的形状偏得有点远
 % pdes=[0.6*L0;0.6*L0;0];        % 这组参数不收敛
 % pdes=[0.3*L0;0.3*L0;pi/2];     % 这组参数也不收敛
+
+
+% 这些参数都是收敛的
+% pdes=[0.6*L0;0.6*L0;2/3*pi];   
+% pdes=[0.6*L0;0.6*L0;1/3*pi];   
+% pdes=[0.6*L0;0.6*L0;0];        
+pdes=[0.3*L0;0.3*L0;pi/2];
 
 R1=planar_nR(E,L0,wid,thi,n,pdes);
 
@@ -43,29 +56,31 @@ q2=fix((2/4+sensor_length/2)*n);
 p3=fix((3/4-sensor_length/2)*n);
 q3=fix((3/4+sensor_length/2)*n);
 
-Delta1=R1.theta(q1)-R1.theta(p1);
-Delta2=R1.theta(q2)-R1.theta(p2);
-Delta3=R1.theta(q3)-R1.theta(p3);
+Delta1=sum(R1.theta(p1:q1));
+Delta2=sum(R1.theta(p2:q2));
+Delta3=sum(R1.theta(p3:q3));
 
 
 % 尝试反解
 Rod=planar_nR(E,L0,wid,thi,n,[0;0;0]);
 
 D1=zeros(1,n);
-D1(p1)=-1;
-D1(q1)=1;
+for i=p1:q1
+    D1(i)=1;
+end
 
 D2=zeros(1,n);
-D2(p2)=-1;
-D2(q2)=1;
+for i=p2:q2
+    D2(i)=1;
+end
 
 D3=zeros(1,n);
-D3(p3)=-1;
-D3(q3)=1;
+for i=p3:q3
+    D3(i)=1;
+end
 
 % 牛顿法求解N+3方程组
 x=zeros(n+3,1);
-x(1:n)=linspace(0,0.1,n);
 
 TOL=1e-6;
 k=1;

@@ -12,6 +12,10 @@
 
 % 待测试：如果传感器的信号有误差，是否求解得到的形状会大幅变化
 
+% 21-03-22晚上
+% 之前的公式搞错了，应该是sum(theta(p1:q1))，而不是theta(q1)-theta(p1)
+% 改回正确的公式后发现效果出奇得好
+
 
 % 生成3个Delta
 clear
@@ -24,8 +28,11 @@ E=197*1e9;
 L0=1;
 n=40;
 
-% pdes=[0.3*L0;0.3*L0;pi/2];   %在这组参数下，求解出的形状相近，但是位置有偏移
-pdes=[0.6*L0;0.6*L0;pi/2];   % 在这组参数下，求解是成功的
+% 这些参数都是收敛的
+% pdes=[0.6*L0;0.6*L0;2/3*pi];   
+% pdes=[0.6*L0;0.6*L0;1/3*pi];   
+% pdes=[0.6*L0;0.6*L0;0];        
+pdes=[0.3*L0;0.3*L0;pi/2];
 
 R1=planar_nR(E,L0,wid,thi,n,pdes);
 
@@ -46,22 +53,24 @@ q2=fix((2/4+sensor_length/2)*n);
 p3=fix((3/4-sensor_length/2)*n);
 q3=fix((3/4+sensor_length/2)*n);
 
-Delta1=R1.theta(q1)-R1.theta(p1);
-Delta2=R1.theta(q2)-R1.theta(p2);
-Delta3=R1.theta(q3)-R1.theta(p3);
+Delta1=sum(R1.theta(p1:q1));
+Delta2=sum(R1.theta(p2:q2));
+Delta3=sum(R1.theta(p3:q3));
 
 D1=zeros(1,n);
-D1(p1)=-1;
-D1(q1)=1;
+for i=p1:q1
+    D1(i)=1;
+end
 
 D2=zeros(1,n);
-D2(p2)=-1;
-D2(q2)=1;
+for i=p2:q2
+    D2(i)=1;
+end
 
 D3=zeros(1,n);
-D3(p3)=-1;
-D3(q3)=1;
-
+for i=p3:q3
+    D3(i)=1;
+end
 
 
 % 使用fsolve求解
