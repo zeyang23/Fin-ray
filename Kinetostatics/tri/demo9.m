@@ -221,3 +221,13 @@ P2(1)=pkb1(1)*cos(beta)-pkb1(2)*sin(beta)+xB;
 P2(2)=pkb1(1)*sin(beta)+pkb1(2)*cos(beta)+yB;
 
 plot([P1(1) P2(1)],[P1(2) P2(2)])
+
+pka2=RA.cal_pk(ka2);
+P3(1)=pka2(1)*cos(alpha)-pka2(2)*sin(alpha)+xA;
+P3(2)=pka2(1)*sin(alpha)+pka2(2)*cos(alpha)+yA;
+
+pkb2=RB.cal_pk(kb2);
+P4(1)=pkb2(1)*cos(beta)-pkb2(2)*sin(beta)+xB;
+P4(2)=pkb2(1)*sin(beta)+pkb2(2)*cos(beta)+yB;
+
+plot([P3(1) P4(1)],[P3(2) P4(2)])
