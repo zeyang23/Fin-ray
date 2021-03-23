@@ -43,10 +43,18 @@ lambdaA1=diag(vA1);
 vB1=[ones(kb1,1);zeros(nB-kb1,1)];
 lambdaB1=diag(vB1);
 
+
 % 第2根刚性约束
-ka2=fix(3/4*nA);
-kb2=fix(3/4*nB);
-Lcon2=1/4*sqrt((xA-xB)^2+(yA-yB)^2);
+
+% 第1组收敛参数
+% ka2=fix(3/4*nA);
+% kb2=fix(3/4*nB);
+% Lcon2=1/4*sqrt((xA-xB)^2+(yA-yB)^2);
+
+% 第2组收敛参数
+ka2=fix(1/8*nA);
+kb2=fix(1/8*nB);
+Lcon2=7/8*sqrt((xA-xB)^2+(yA-yB)^2);
 
 vA2=[ones(ka2,1);zeros(nA-ka2,1)];
 lambdaA2=diag(vA2);
