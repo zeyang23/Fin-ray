@@ -7,6 +7,10 @@
 
 % fsolve好强。。。
 
+% 21-03-24晚
+% 淦，之前写的是B=-rotz(beta-alpha)，忘了把弧度制转化成角度制了。。。
+
+
 clear
 clc
 
@@ -30,7 +34,7 @@ beta=beta_degree/180*pi;
 A=rotz(-alpha_degree)*rotz(beta_degree);
 b=rotz(-alpha_degree)*[xB-xA;yB-yA;beta-alpha-psi];
 
-B=-rotz(beta-alpha);
+B=-rotz(beta_degree-alpha_degree);
 
 
 nA=50;

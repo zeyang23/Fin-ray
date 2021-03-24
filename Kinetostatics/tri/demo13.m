@@ -5,6 +5,9 @@
 % GradientCheck仍然不通过，离谱
 % 不给fsolve提供梯度也能解出来，只不过速度很慢
 
+% 21-03-24晚
+% 淦，之前写的是B=-rotz(beta-alpha)，忘了把弧度制转化成角度制了。。。
+
 clear
 clc
 
@@ -28,7 +31,7 @@ beta=beta_degree/180*pi;
 A=rotz(-alpha_degree)*rotz(beta_degree);
 b=rotz(-alpha_degree)*[xB-xA;yB-yA;beta-alpha-psi];
 
-B=-rotz(beta-alpha);
+B=-rotz(beta_degree-alpha_degree);
 
 
 nA=50;
@@ -70,10 +73,11 @@ RB=planar_nR(E,LB,wid,thi,nB,pdes);
 x0=zeros(nA+nB+5,1);
 
 %尝试使用无刚性约束时的初值
-load('x_init.mat')
-x0(1:nA+nB+3)=x_init;
+% load('x_init.mat')
+% x0(1:nA+nB+3)=x_init;
 
-options = optimoptions('fsolve','SpecifyObjectiveGradient',false,'CheckGradient',false);
+options = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',false);
+% options = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',true,'FiniteDifferenceType','central','FiniteDifferenceStepSize',1e-10);
 
 f=@(x) myfun(x,xA,xB,yA,yB,beta,beta_degree,alpha,alpha_degree,A,B,b,nA,nB,RA,RB,Lcon1,ka1,kb1,lambdaA1,lambdaB1);
 [x,fval,exitflag,output] = fsolve(f,x0,options);

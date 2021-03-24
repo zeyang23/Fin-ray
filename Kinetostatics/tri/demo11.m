@@ -1,6 +1,11 @@
 % 尝试求解顶端约束的Fin-ray型机构
 % 考虑内部有4根刚性约束
 
+% 21-03-24晚
+% 淦，之前写的是B=-rotz(beta-alpha)，忘了把弧度制转化成角度制了。。。
+% 改正过来以后原先不收敛的参数也收敛了...
+% 甚至从全为0的初值也能搜索出来了。。。
+
 clear
 clc
 
@@ -23,7 +28,7 @@ beta=beta_degree/180*pi;
 A=rotz(-alpha_degree)*rotz(beta_degree);
 b=rotz(-alpha_degree)*[xB-xA;yB-yA;beta-alpha-psi];
 
-B=-rotz(beta-alpha);
+B=-rotz(beta_degree-alpha_degree);
 
 
 nA=50;
@@ -75,7 +80,7 @@ vB4=[ones(kb4,1);zeros(nB-kb4,1)];
 lambdaB4=diag(vB4);
 
 
-% 失败的参数
+% 第2组收敛的参数
 % % 第1根刚性约束
 % ka1=fix(1/5*nA);
 % kb1=fix(1/5*nB);
@@ -134,8 +139,8 @@ RB=planar_nR(E,LB,wid,thi,nB,pdes);
 x=zeros(nA+nB+11,1);
 
 %尝试使用无刚性约束时的初值
-load('x_init.mat')
-x(1:nA+nB+3)=x_init;
+% load('x_init.mat')
+% x(1:nA+nB+3)=x_init;
 
 
 TOL=1e-6;

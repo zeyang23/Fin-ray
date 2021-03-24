@@ -25,7 +25,7 @@ beta=beta_degree/180*pi;
 A=rotz(-alpha_degree)*rotz(beta_degree);
 b=rotz(-alpha_degree)*[xB-xA;yB-yA;beta-alpha-psi];
 
-B=-rotz(beta-alpha);
+B=-rotz(beta_degree-alpha_degree);
 
 
 nA=50;
