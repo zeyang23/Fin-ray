@@ -30,15 +30,43 @@ thi=1e-3;
 E=197*1e9;
 
 
-Lcon1=4/5*sqrt((xA-xB)^2+(yA-yB)^2);
-constraint_ratio=[Lcon1,1/5,1/5];
-% constraint_ratio=[];
+constraint_ratio=[];
+Lcon1=6/7*sqrt((xA-xB)^2+(yA-yB)^2);
+Lcon2=5/7*sqrt((xA-xB)^2+(yA-yB)^2);
+Lcon3=4/7*sqrt((xA-xB)^2+(yA-yB)^2);
+Lcon4=3/7*sqrt((xA-xB)^2+(yA-yB)^2);
+Lcon5=2/7*sqrt((xA-xB)^2+(yA-yB)^2);
+Lcon6=1/7*sqrt((xA-xB)^2+(yA-yB)^2);
+constraint_ratio=[Lcon1,1/7,1/7;
+                  Lcon2,2/7,2/7;
+                  Lcon3,3/7,3/7;
+                  Lcon4,4/7,4/7;
+                  Lcon5,5/7,5/7;
+                  Lcon6,6/7,6/7];
 
-A_force_ratio=[1.5,1/2];
-B_force_ratio=[2.5,1/4;0.5,3/4];
+
+A_force_ratio=[];
+A_force_ratio=[1,1/14;
+               1,3/14;
+               1,5/14;
+               1,7/14;
+               1,9/14;
+               1,11/14;
+               1,13/14];
+% A_force_ratio(:,1)=0.2*A_force_ratio(:,1);
+
+B_force_ratio=[];
+B_force_ratio=[1,1/14;
+               1,3/14;
+               1,5/14;
+               1,7/14;
+               1,9/14;
+               1,11/14;
+               1,13/14];
+% B_force_ratio(:,1)=0.2*B_force_ratio(:,1);
 
 
-
+% 根据上面设定的参数生成参数结构体
 finray_info=struct();
 
 finray_info.pA=[xA;yA;alpha];
@@ -70,31 +98,14 @@ finray_info.B_force_ratio=B_force_ratio;
 
 Finray1=finray(finray_info);
 
-x0=zeros(nA+nB+5,1);
 
-options = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',true);
+
+
+x0=zeros(nA+nB+3+2*Finray1.constraint_number,1);
+
+options = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',false);
 
 f=@(x) Finray1.cal_balance(x);
 [x_solve,fval,exitflag,output] = fsolve(f,x0,options);
 
 Finray1.plot_state(x_solve);
-
-% Finray1.RodA.cal_posall;
-% Finray1.RodB.cal_posall;
-% 
-% A_pos_all=Finray1.RodA.pos_all;
-% B_pos_all=Finray1.RodB.pos_all;
-% 
-% A_abs_pos_all=plot_abs_pos(A_pos_all,alpha,[xA,yA]);
-% hold on
-% B_abs_pos_all=plot_abs_pos(B_pos_all,beta,[xB,yB]);
-% 
-% pka1=Finray1.A_constraint_array(1).pe;
-% PA1(1)=pka1(1)*cos(alpha)-pka1(2)*sin(alpha)+xA;
-% PA1(2)=pka1(1)*sin(alpha)+pka1(2)*cos(alpha)+yA;
-% 
-% pkb1=Finray1.B_constraint_array(1).pe;
-% PB1(1)=pkb1(1)*cos(beta)-pkb1(2)*sin(beta)+xB;
-% PB1(2)=pkb1(1)*sin(beta)+pkb1(2)*cos(beta)+yB;
-% 
-% plot([PA1(1) PB1(1)],[PA1(2) PB1(2)])
