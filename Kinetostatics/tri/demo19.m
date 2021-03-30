@@ -7,6 +7,9 @@
 
 % 梯度检测也没有通过，不清楚为什么
 
+% 21-03-30中午
+% 放弃这个思路
+
 
 clear
 clc
@@ -18,7 +21,7 @@ yc=0.5*L0;
 
 rc=0.1*L0;
 
-A_contact_index=25;
+A_contact_index=10;
 
 
 xA=0;
@@ -36,8 +39,8 @@ alpha=alpha_degree/180*pi;
 beta=beta_degree/180*pi;
 
 
-nA=50;
-nB=50;
+nA=20;
+nB=20;
 
 
 LA=1*L0;
@@ -55,14 +58,14 @@ Lcon3=4/7*sqrt((xA-xB)^2+(yA-yB)^2);
 Lcon4=3/7*sqrt((xA-xB)^2+(yA-yB)^2);
 Lcon5=2/7*sqrt((xA-xB)^2+(yA-yB)^2);
 Lcon6=1/7*sqrt((xA-xB)^2+(yA-yB)^2);
-constraint_ratio=[Lcon1,1/7,1/7;
-                  Lcon2,2/7,2/7;
-                  Lcon3,3/7,3/7;
-                  Lcon4,4/7,4/7;
-                  Lcon5,5/7,5/7;
-                  Lcon6,6/7,6/7];
+% constraint_ratio=[Lcon1,1/7,1/7;
+%                   Lcon2,2/7,2/7;
+%                   Lcon3,3/7,3/7;
+%                   Lcon4,4/7,4/7;
+%                   Lcon5,5/7,5/7;
+%                   Lcon6,6/7,6/7];
 
-
+constraint_ratio=[Lcon3,3/7,3/7];
 
 
 
@@ -105,8 +108,14 @@ Finray1=finray_contact(finray_info);
 
 
 x0=zeros(nA+nB+5+2*Finray1.constraint_number,1);
+x0(end)=rc;
 
 options = optimoptions('fsolve','SpecifyObjectiveGradient',false,'CheckGradient',true);
 
 f=@(x) Finray1.cal_balance(x);
 [x_solve,fval,exitflag,output] = fsolve(f,x0,options);
+
+Finray1.plot_state(x_solve);
+
+rectangle('Position',[xc-rc,yc-rc,2*rc,2*rc],'Curvature',[1,1],'linewidth',1,'edgecolor','r')
+axis equal;
