@@ -12,21 +12,29 @@
 % radius=0.1*L0; center_x=0.2*L0; center_y=0.5*L0;
 % 这组参数得到的X=[29,5.0791] f(X)=0.001
 
+% 21-03-30中午
+% radius=0.1*L0; center_x=0.1*L0; center_y=0.4*L0;
+% 这组参数得到的X=[21,2.8086] f(X)=0.007
+% Surface开启性能模式，大概需要45分钟
+
+% 不管怎么说，起码算是能求解了。。。
+
+
 clear
 clc
 
 L0=1;
 
 radius=0.1*L0;
-center_x=0.2*L0;
-center_y=0.5*L0;
+center_x=0.1*L0;
+center_y=0.4*L0;
 
 f=@(tangent_var) myfunc(tangent_var,center_x,center_y,radius);
 
 lb = [5,0];
 ub = [45,8];
 
-[X,fval,exitflag_f] = ga(f,2,[],[],[],[],lb,ub,[],1,[]);
+[X,fval,exitflag_f,output1] = ga(f,2,[],[],[],[],lb,ub,[],1,[]);
 
 
 % 验证结果
@@ -130,7 +138,7 @@ x0=zeros(nA+nB+3+2*Finray1.constraint_number,1);
 options = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',false,'Display','off');
 
 g=@(x) Finray1.cal_balance(x);
-[x_solve,gval,exitflag_g,output] = fsolve(g,x0,options);
+[x_solve,gval,exitflag_g,output2] = fsolve(g,x0,options);
 
 Finray1.plot_state(x_solve);
 
