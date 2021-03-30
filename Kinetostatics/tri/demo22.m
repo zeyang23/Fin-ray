@@ -5,6 +5,7 @@
 % 通过了Gradient Check
 
 % 实现了无内部支撑时相切接触的快速求解
+% 鲁棒性很强
 
 clear
 clc
@@ -28,7 +29,7 @@ alpha=alpha_degree/180*pi;
 
 radius=0.1*L0;
 center_x=0.2*L0;
-center_y=0.5*L0;
+center_y=0.4*L0;
 
 
 x0=zeros(n+2,1);
@@ -73,7 +74,7 @@ nA=50;
 nB=50;
 
 
-LA=1*L0;
+LA=1*L0-x_solve(end-1);
 LB=1*L0;
 
 wid=5e-3;
