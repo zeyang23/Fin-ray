@@ -10,6 +10,9 @@
 % 21-04-07中午
 % finray_force类的效果很棒，现在不再需要用遗传算法来解问题了,效率显著提升
 
+% lsqnonlin和fsolve都能解，不过lsqnonlin能给变量添加约束，更鲁棒一些
+
+
 clear
 clc
 
@@ -24,7 +27,8 @@ f=@(tangent_var) myfunc(tangent_var,center_x,center_y,radius);
 lb = [0,0];
 ub = [1,10];
 X0 = [0.5,1];
-[X,resnorm,residual,exitflag_lsq,output_lsq] = lsqnonlin(f,X0,lb,ub);
+% [X,resnorm,residual,exitflag_lsq,output_lsq] = lsqnonlin(f,X0,lb,ub);
+[X,fval_fsolve,exitflag_fsolve,output_fsolve]=fsolve(f,X0);
 
 
 % 验证结果
