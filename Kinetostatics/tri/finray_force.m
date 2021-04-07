@@ -230,7 +230,7 @@ classdef finray_force < handle
                         obj.A_force_array(i).update;
                         pk_Fi=obj.A_force_array(i).pe;
                         
-                        L_tail=obj.A_force_ratio(i,2)*obj.LA-obj.A_force_array(i).Ltotal;
+                        L_tail=obj.A_force_ratio(i,2)*obj.LA-(obj.A_force_array(i).Ltotal-obj.RodA.seg_length/2);
                         obj.A_force_array(i).F=[obj.A_force_index(i,1)*sin(pk_Fi(3));-obj.A_force_index(i,1)*cos(pk_Fi(3));-(L_tail-obj.A_force_array(i).seg_length/2)*obj.A_force_index(i,1)];
                         obj.A_force_array(i).update;
                         
@@ -256,7 +256,7 @@ classdef finray_force < handle
                         obj.B_force_array(i).update;
                         pk_Fi=obj.B_force_array(i).pe;
                         
-                        L_tail=obj.B_force_ratio(i,2)*obj.LB-obj.B_force_array(i).Ltotal;
+                        L_tail=obj.B_force_ratio(i,2)*obj.LB-(obj.B_force_array(i).Ltotal-obj.RodB.seg_length/2);
                         obj.B_force_array(i).F=[-obj.B_force_index(i,1)*sin(pk_Fi(3));obj.B_force_index(i,1)*cos(pk_Fi(3));(L_tail-obj.B_force_array(i).seg_length/2)*obj.B_force_index(i,1)];
                         obj.B_force_array(i).update;
                         
@@ -356,7 +356,7 @@ classdef finray_force < handle
                         obj.A_force_array(i).update;
                         pk_Fi=obj.A_force_array(i).pe;
 
-                        L_tail=obj.A_force_ratio(i,2)*obj.LA-obj.A_force_array(i).Ltotal;
+                        L_tail=obj.A_force_ratio(i,2)*obj.LA-(obj.A_force_array(i).Ltotal-obj.RodA.seg_length/2);
                         obj.A_force_array(i).F=[obj.A_force_index(i,1)*sin(pk_Fi(3));-obj.A_force_index(i,1)*cos(pk_Fi(3));-(L_tail-obj.A_force_array(i).seg_length/2)*obj.A_force_index(i,1)];
                         obj.A_force_array(i).update;
                         
@@ -382,7 +382,7 @@ classdef finray_force < handle
                         obj.B_force_array(i).update;
                         pk_Fi=obj.B_force_array(i).pe;
                        
-                        L_tail=obj.B_force_ratio(i,2)*obj.LB-obj.B_force_array(i).Ltotal;
+                        L_tail=obj.B_force_ratio(i,2)*obj.LB-(obj.B_force_array(i).Ltotal-obj.RodB.seg_length/2);
                         obj.B_force_array(i).F=[-obj.B_force_index(i,1)*sin(pk_Fi(3));obj.B_force_index(i,1)*cos(pk_Fi(3));(L_tail-obj.B_force_array(i).seg_length/2)*obj.B_force_index(i,1)];
                         obj.B_force_array(i).update;
                         
@@ -450,9 +450,9 @@ classdef finray_force < handle
                     obj.A_force_array(i).cal_pe;
                     
                     pka=obj.A_force_array(i).pe;
-                    L_tail=obj.A_force_ratio(1,2)*obj.LA-obj.A_force_array(1).Ltotal;
-                    pka(1)=pka(1)-obj.A_force_array(1).seg_length*cos(sum(obj.A_force_array(1).theta))/2+L_tail*cos(sum(obj.A_force_array(1).theta));
-                    pka(2)=pka(2)-obj.A_force_array(1).seg_length*sin(sum(obj.A_force_array(1).theta))/2+L_tail*sin(sum(obj.A_force_array(1).theta));
+                    L_tail=obj.A_force_ratio(i,2)*obj.LA-(obj.A_force_array(i).Ltotal-obj.RodA.seg_length/2);
+                    pka(1)=pka(1)-obj.A_force_array(i).seg_length*cos(sum(obj.A_force_array(i).theta))/2+L_tail*cos(sum(obj.A_force_array(i).theta));
+                    pka(2)=pka(2)-obj.A_force_array(i).seg_length*sin(sum(obj.A_force_array(i).theta))/2+L_tail*sin(sum(obj.A_force_array(i).theta));
                     PA(1)=pka(1)*cos(obj.pA(3))-pka(2)*sin(obj.pA(3))+obj.pA(1);
                     PA(2)=pka(1)*sin(obj.pA(3))+pka(2)*cos(obj.pA(3))+obj.pA(2);
                     
@@ -469,9 +469,9 @@ classdef finray_force < handle
                     obj.B_force_array(i).cal_pe;
                     
                     pkb=obj.B_force_array(i).pe;
-                    L_tail=obj.B_force_ratio(1,2)*obj.LB-obj.B_force_array(1).Ltotal;
-                    pkb(1)=pkb(1)-obj.B_force_array(1).seg_length*cos(sum(obj.B_force_array(1).theta))/2+L_tail*cos(sum(obj.B_force_array(1).theta));
-                    pkb(2)=pkb(2)-obj.B_force_array(1).seg_length*sin(sum(obj.B_force_array(1).theta))/2+L_tail*sin(sum(obj.B_force_array(1).theta));
+                    L_tail=obj.B_force_ratio(i,2)*obj.LB-(obj.B_force_array(i).Ltotal-obj.RodB.seg_length/2);
+                    pkb(1)=pkb(1)-obj.B_force_array(i).seg_length*cos(sum(obj.B_force_array(i).theta))/2+L_tail*cos(sum(obj.B_force_array(i).theta));
+                    pkb(2)=pkb(2)-obj.B_force_array(i).seg_length*sin(sum(obj.B_force_array(i).theta))/2+L_tail*sin(sum(obj.B_force_array(i).theta));
                     PB(1)=pkb(1)*cos(obj.pB(3))-pkb(2)*sin(obj.pB(3))+obj.pB(1);
                     PB(2)=pkb(1)*sin(obj.pB(3))+pkb(2)*cos(obj.pB(3))+obj.pB(2);
                     

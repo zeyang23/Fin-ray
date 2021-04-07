@@ -17,7 +17,7 @@ clc
 
 L0=1;
 
-radius=0.1*L0;
+radius=0.2*L0;
 center_x=0.1*L0;
 center_y=0.4*L0;
 
@@ -290,7 +290,7 @@ function r=myfunc(tangent_var,center_x,center_y,radius)
         Finray1.A_force_array(i).cal_pe;
 
         pka=Finray1.A_force_array(i).pe;
-        L_tail=Finray1.A_force_ratio(i,2)*Finray1.LA-Finray1.A_force_array(i).Ltotal;
+        L_tail=Finray1.A_force_ratio(i,2)*Finray1.LA-(Finray1.A_force_array(i).Ltotal-Finray1.A_force_array(i).seg_length/2);
         pka(1)=pka(1)-Finray1.A_force_array(i).seg_length*cos(sum(Finray1.A_force_array(i).theta))/2+L_tail*cos(sum(Finray1.A_force_array(i).theta));
         pka(2)=pka(2)-Finray1.A_force_array(i).seg_length*sin(sum(Finray1.A_force_array(i).theta))/2+L_tail*sin(sum(Finray1.A_force_array(i).theta));
 

@@ -1,44 +1,54 @@
-% 直接调用lsqnonlin来求解与圆柱的相切问题
+% 测试多点接触 多点均相切
 
-% 21-03-29 
-% 求解效果差，因为有fix(ratio*nA)这样的取整操作，使得求解器误认为关于ratio的梯度为0
-
-% 21-04-07
-% 不再认为F作用于小单元的中心，使用力的平移，偏移量对应一个力矩
-% finray_force类
-
-% 21-04-07中午
-% finray_force类的效果很棒，现在不再需要用遗传算法来解问题了,效率显著提升
-
-% lsqnonlin和fsolve都能解，不过lsqnonlin能给变量添加约束，更鲁棒一些
+% 设置均匀间隔，只搜索起点和终点
 
 
+%%
 clear
 clc
 
 L0=1;
 
-radius=0.1*L0;
-center_x=0.2*L0;
+radius=0.2*L0;
+center_x=0.1*L0;
 center_y=0.4*L0;
 
 f=@(tangent_var) myfunc(tangent_var,center_x,center_y,radius);
 
-lb = [0,0];
-ub = [1,10];
-X0 = [0.5,1];
-% [X,resnorm,residual,exitflag_lsq,output_lsq] = lsqnonlin(f,X0,lb,ub);
-[X,fval_fsolve,exitflag_fsolve,output_fsolve]=fsolve(f,X0);
+
+% 相切点的个数
+N_tan=5;
 
 
-% 验证结果
+lb=zeros(2+N_tan,1);
+
+ub=zeros(N_tan+2,1);
+ub(1)=1;
+ub(2)=1;
+for i=1:N_tan
+    ub(i+2)=10;
+end
+
+ratio_series=linspace(0.2,0.8,N_tan);
+
+X0=zeros(2+N_tan,1);
+X0(1)=0.3;
+X0(2)=0.7;
+for i=1:N_tan
+    X0(i+2)=1;
+end
+
+
+[X,resnorm,residual,exitflag_lsq,output_lsq] = lsqnonlin(f,X0,lb,ub);
+% [X,fval_fsolve,exitflag_fsolve,output_fsolve]=fsolve(f,X0);
+
+
+%% 验证结果
 % 画出圆柱位置
 rectangle('Position',[center_x-radius,center_y-radius,2*radius,2*radius],'Curvature',[1,1],'linewidth',1,'edgecolor','r')
 axis equal;
 hold on
 
-tangent_ratio=X(1);
-tangent_F=X(2);
 
 L0=1;
 
@@ -85,6 +95,21 @@ constraint_ratio=[Lcon1,1/7,1/7;
 
 
 A_force_ratio=[];
+
+start_ratio=X(1);
+end_ratio=X(2);
+
+N_tan=length(X)-2;
+
+tangent_ratio=linspace(start_ratio,end_ratio,N_tan);
+tangent_ratio=transpose(tangent_ratio);
+
+tangent_F=zeros(N_tan,1);
+
+for i=1:N_tan
+    tangent_F(i)=X(i+2);
+end
+
 A_force_ratio=[tangent_F,tangent_ratio];
 
 
@@ -148,8 +173,20 @@ Finray1.plot_state(x_solve);
 
 function r=myfunc(tangent_var,center_x,center_y,radius)
 
-    tangent_ratio=tangent_var(1);
-    tangent_F=tangent_var(2);
+    start_ratio=tangent_var(1);
+    end_ratio=tangent_var(2);
+    
+    N_tan=length(tangent_var)-2;
+    
+    tangent_ratio=linspace(start_ratio,end_ratio,N_tan);
+    tangent_ratio=transpose(tangent_ratio);
+    
+    tangent_F=zeros(N_tan,1);
+    
+    for i=1:N_tan
+        tangent_F(i)=tangent_var(i+2);
+    end
+
 
     L0=1;
 
@@ -247,22 +284,27 @@ function r=myfunc(tangent_var,center_x,center_y,radius)
     
     
     % 拿到切点的x y phi
+    % 验证相切条件
     
     thetaA=x_solve(1:Finray1.nA);
-    Finray1.A_force_array(1).theta=thetaA(1:Finray1.A_force_index(1,2));
-    Finray1.A_force_array(1).cal_pe;
+    
+    r=zeros(2*N_tan,1);
+    
+    for i=1:N_tan
+        Finray1.A_force_array(i).theta=thetaA(1:Finray1.A_force_index(i,2));
+        Finray1.A_force_array(i).cal_pe;
 
-    pka=Finray1.A_force_array(1).pe;
-    L_tail=Finray1.A_force_ratio(1,2)*Finray1.LA-(Finray1.A_force_array(1).Ltotal-Finray1.A_force_array(1).seg_length/2);
-    pka(1)=pka(1)-Finray1.A_force_array(1).seg_length*cos(sum(Finray1.A_force_array(1).theta))/2+L_tail*cos(sum(Finray1.A_force_array(1).theta));
-    pka(2)=pka(2)-Finray1.A_force_array(1).seg_length*sin(sum(Finray1.A_force_array(1).theta))/2+L_tail*sin(sum(Finray1.A_force_array(1).theta));
-    
-    PA(1)=pka(1)*cos(Finray1.pA(3))-pka(2)*sin(Finray1.pA(3))+Finray1.pA(1);
-    PA(2)=pka(1)*sin(Finray1.pA(3))+pka(2)*cos(Finray1.pA(3))+Finray1.pA(2);
-    PA(3)=pka(3)+Finray1.pA(3);
-    
-    r=zeros(2,1);
-    r(1)=center_x+radius*sin(PA(3))-PA(1);
-    r(2)=center_y-radius*cos(PA(3))-PA(2);
+        pka=Finray1.A_force_array(i).pe;
+        L_tail=Finray1.A_force_ratio(i,2)*Finray1.LA-(Finray1.A_force_array(i).Ltotal-Finray1.A_force_array(i).seg_length/2);
+        pka(1)=pka(1)-Finray1.A_force_array(i).seg_length*cos(sum(Finray1.A_force_array(i).theta))/2+L_tail*cos(sum(Finray1.A_force_array(i).theta));
+        pka(2)=pka(2)-Finray1.A_force_array(i).seg_length*sin(sum(Finray1.A_force_array(i).theta))/2+L_tail*sin(sum(Finray1.A_force_array(i).theta));
+
+        PA(1)=pka(1)*cos(Finray1.pA(3))-pka(2)*sin(Finray1.pA(3))+Finray1.pA(1);
+        PA(2)=pka(1)*sin(Finray1.pA(3))+pka(2)*cos(Finray1.pA(3))+Finray1.pA(2);
+        PA(3)=pka(3)+Finray1.pA(3);
+        
+        r(2*i-1)=center_x+radius*sin(PA(3))-PA(1);
+        r(2*i)=center_y-radius*cos(PA(3))-PA(2);
+    end
     
 end

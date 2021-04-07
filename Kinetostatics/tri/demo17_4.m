@@ -151,7 +151,7 @@ function r=myfunc(tangent_var,delta,center_x,center_y,radius)
     Finray1.A_force_array(1).cal_pe;
 
     pka=Finray1.A_force_array(1).pe;
-    L_tail=Finray1.A_force_ratio(1,2)*Finray1.LA-Finray1.A_force_array(1).Ltotal;
+    L_tail=Finray1.A_force_ratio(1,2)*Finray1.LA-(Finray1.A_force_array(1).Ltotal-Finray1.A_force_array(1).seg_length/2);
     pka(1)=pka(1)-Finray1.A_force_array(1).seg_length*cos(sum(Finray1.A_force_array(1).theta))/2+L_tail*cos(sum(Finray1.A_force_array(1).theta));
     pka(2)=pka(2)-Finray1.A_force_array(1).seg_length*sin(sum(Finray1.A_force_array(1).theta))/2+L_tail*sin(sum(Finray1.A_force_array(1).theta));
     
