@@ -64,8 +64,8 @@ constraint_ratio=[Lcon1,15.54/LA,16.71/LB;
 
 
 A_force_ratio=[];
-A_force_ratio=[0,1/2;
-               0,1/4];
+A_force_ratio=[0.01,1/2];
+
 
 B_force_ratio=[];
 
