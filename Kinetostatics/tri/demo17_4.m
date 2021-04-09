@@ -104,7 +104,7 @@ function r=myfunc(tangent_var,delta,center_x,center_y,radius)
     finray_info=struct();
 
     finray_info.pA=[xA;yA;alpha];
-    finray_info.pB=[xB;yA;beta];
+    finray_info.pB=[xB;yB;beta];
 
     finray_info.LA=LA;
     finray_info.LB=LB;

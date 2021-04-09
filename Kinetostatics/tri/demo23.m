@@ -95,7 +95,7 @@ for i=1:length(delta)
     finray_info=struct();
 
     finray_info.pA=[xA2;yA2;alpha2];
-    finray_info.pB=[xB;yA;beta];
+    finray_info.pB=[xB;yB;beta];
 
     finray_info.LA=LA;
     finray_info.LB=LB;

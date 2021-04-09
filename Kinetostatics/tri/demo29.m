@@ -98,7 +98,7 @@ B_force_ratio=[tangent_F_B,tangent_ratio_B];
 finray_info=struct();
 
 finray_info.pA=[xA;yA;alpha];
-finray_info.pB=[xB;yA;beta];
+finray_info.pB=[xB;yB;beta];
 
 finray_info.LA=LA;
 finray_info.LB=LB;
@@ -214,7 +214,7 @@ function r=myfunc(tangent_var,center_xA,center_yA,radiusA,center_xB,center_yB,ra
     finray_info=struct();
 
     finray_info.pA=[xA;yA;alpha];
-    finray_info.pB=[xB;yA;beta];
+    finray_info.pB=[xB;yB;beta];
 
     finray_info.LA=LA;
     finray_info.LB=LB;

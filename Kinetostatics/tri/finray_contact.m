@@ -116,7 +116,7 @@ classdef finray_contact < handle
 
                 kbi=fix(obj.constraint_ratio(i,3)*obj.nB);
                 obj.constraint_index(i,3)=kbi;
-                obj.B_constraint_array(i)=planar_nR(obj.E_B,kbi/obj.nB*obj.LA,obj.wid_B,obj.thi_B,kbi,[0;0;0]);
+                obj.B_constraint_array(i)=planar_nR(obj.E_B,kbi/obj.nB*obj.LB,obj.wid_B,obj.thi_B,kbi,[0;0;0]);
             end
         end
 

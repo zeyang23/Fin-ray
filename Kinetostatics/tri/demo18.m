@@ -102,7 +102,7 @@ B_force_ratio=[];
 finray_info=struct();
 
 finray_info.pA=[xA;yA;alpha];
-finray_info.pB=[xB;yA;beta];
+finray_info.pB=[xB;yB;beta];
 
 finray_info.LA=LA;
 finray_info.LB=LB;
@@ -215,7 +215,7 @@ function normr=myfunc(tangent_var,center_x,center_y,radius)
     finray_info=struct();
 
     finray_info.pA=[xA;yA;alpha];
-    finray_info.pB=[xB;yA;beta];
+    finray_info.pB=[xB;yB;beta];
 
     finray_info.LA=LA;
     finray_info.LB=LB;

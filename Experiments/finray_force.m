@@ -1,6 +1,5 @@
-classdef finray < handle
-    %FIN_RAY 此处显示有关此类的摘要
-    %   此处显示详细说明
+classdef finray_force < handle
+    % 用于调试真实参数
     
     properties
         pA; % 左底角的固定位置和角度 [xA;yA;alpha]
@@ -60,7 +59,7 @@ classdef finray < handle
     end
     
     methods
-        function obj = finray(finray_info)
+        function obj = finray_force(finray_info)
             % finray_info是一个结构体，储存了必要的信息
             
             % 从finray_info读取信息
@@ -116,11 +115,11 @@ classdef finray < handle
                 for i=1:obj.constraint_number
                     kai=fix(obj.constraint_ratio(i,2)*obj.nA);
                     obj.constraint_index(i,2)=kai;
-                    obj.A_constraint_array(i)=planar_nR(obj.E_A,kai/obj.nA*obj.LA,obj.wid_A,obj.thi_A,kai,[0;0;0]);
+                    obj.A_constraint_array(i)=planar_nR(obj.E_A,kai*obj.RodA.seg_length,obj.wid_A,obj.thi_A,kai,[0;0;0]);
                     
                     kbi=fix(obj.constraint_ratio(i,3)*obj.nB);
                     obj.constraint_index(i,3)=kbi;
-                    obj.B_constraint_array(i)=planar_nR(obj.E_B,kbi/obj.nB*obj.LB,obj.wid_B,obj.thi_B,kbi,[0;0;0]);
+                    obj.B_constraint_array(i)=planar_nR(obj.E_B,kbi*obj.RodB.seg_length,obj.wid_B,obj.thi_B,kbi,[0;0;0]);
                 end
             end
             
@@ -134,10 +133,14 @@ classdef finray < handle
                 obj.A_force_index=zeros(size(obj.A_force_ratio));
                 obj.A_force_index(:,1)=obj.A_force_ratio(:,1);
                 
-                for i=1:obj.A_force_number
-                    kFai=fix(obj.A_force_ratio(i,2)*obj.nA);
+                for i=1:obj.A_force_number                    
+%                     kFai=fix(obj.A_force_ratio(i,2)*obj.nA);
+%                     obj.A_force_index(i,2)=kFai;
+%                     obj.A_force_array(i)=planar_nR(obj.E_A,kFai/obj.nA*obj.LA,obj.wid_A,obj.thi_A,kFai,[0;0;0]);
+
+                    kFai=fix((obj.A_force_ratio(i,2)*obj.LA-1/2*obj.RodA.seg_length)/obj.RodA.seg_length)+1;
                     obj.A_force_index(i,2)=kFai;
-                    obj.A_force_array(i)=planar_nR(obj.E_A,kFai/obj.nA*obj.LA,obj.wid_A,obj.thi_A,kFai,[0;0;0]);
+                    obj.A_force_array(i)=planar_nR(obj.E_A,kFai*obj.RodA.seg_length,obj.wid_A,obj.thi_A,kFai,[0;0;0]);
                 end
             end
             
@@ -152,9 +155,14 @@ classdef finray < handle
                 obj.B_force_index(:,1)=obj.B_force_ratio(:,1);
                 
                 for i=1:obj.B_force_number
-                    kFbi=fix(obj.B_force_ratio(i,2)*obj.nB);
+%                     kFbi=fix(obj.B_force_ratio(i,2)*obj.nB);
+%                     obj.B_force_index(i,2)=kFbi;
+%                     obj.B_force_array(i)=planar_nR(obj.E_B,kFbi/obj.nB*obj.LB,obj.wid_B,obj.thi_B,kFbi,[0;0;0]);
+
+                    kFbi=fix((obj.B_force_ratio(i,2)*obj.LB-1/2*obj.RodB.seg_length)/obj.RodB.seg_length)+1;
                     obj.B_force_index(i,2)=kFbi;
-                    obj.B_force_array(i)=planar_nR(obj.E_B,kFbi/obj.nB*obj.LB,obj.wid_B,obj.thi_B,kFbi,[0;0;0]);
+                    obj.B_force_array(i)=planar_nR(obj.E_B,kFbi*obj.RodB.seg_length,obj.wid_B,obj.thi_B,kFbi,[0;0;0]);
+
                 end
             end
 
@@ -221,7 +229,8 @@ classdef finray < handle
                         obj.A_force_array(i).update;
                         pk_Fi=obj.A_force_array(i).pe;
                         
-                        obj.A_force_array(i).F=[obj.A_force_index(i,1)*sin(pk_Fi(3));-obj.A_force_index(i,1)*cos(pk_Fi(3));0];
+                        L_tail=obj.A_force_ratio(i,2)*obj.LA-(obj.A_force_array(i).Ltotal-obj.RodA.seg_length/2);
+                        obj.A_force_array(i).F=[obj.A_force_index(i,1)*sin(pk_Fi(3));-obj.A_force_index(i,1)*cos(pk_Fi(3));-(L_tail-obj.A_force_array(i).seg_length/2)*obj.A_force_index(i,1)];
                         obj.A_force_array(i).update;
                         
                         lambdaFi=zeros(obj.A_force_index(i,2),obj.nA);
@@ -245,7 +254,9 @@ classdef finray < handle
                         obj.B_force_array(i).F=zeros(3,1);
                         obj.B_force_array(i).update;
                         pk_Fi=obj.B_force_array(i).pe;
-                        obj.B_force_array(i).F=[-obj.B_force_index(i,1)*sin(pk_Fi(3));obj.B_force_index(i,1)*cos(pk_Fi(3));0];
+                        
+                        L_tail=obj.B_force_ratio(i,2)*obj.LB-(obj.B_force_array(i).Ltotal-obj.RodB.seg_length/2);
+                        obj.B_force_array(i).F=[-obj.B_force_index(i,1)*sin(pk_Fi(3));obj.B_force_index(i,1)*cos(pk_Fi(3));(L_tail-obj.B_force_array(i).seg_length/2)*obj.B_force_index(i,1)];
                         obj.B_force_array(i).update;
                         
                         lambdaFi=zeros(obj.B_force_index(i,2),obj.nB);
@@ -343,7 +354,9 @@ classdef finray < handle
                         obj.A_force_array(i).F=zeros(3,1);
                         obj.A_force_array(i).update;
                         pk_Fi=obj.A_force_array(i).pe;
-                        obj.A_force_array(i).F=[obj.A_force_index(i,1)*sin(pk_Fi(3));-obj.A_force_index(i,1)*cos(pk_Fi(3));0];
+
+                        L_tail=obj.A_force_ratio(i,2)*obj.LA-(obj.A_force_array(i).Ltotal-obj.RodA.seg_length/2);
+                        obj.A_force_array(i).F=[obj.A_force_index(i,1)*sin(pk_Fi(3));-obj.A_force_index(i,1)*cos(pk_Fi(3));-(L_tail-obj.A_force_array(i).seg_length/2)*obj.A_force_index(i,1)];
                         obj.A_force_array(i).update;
                         
                         lambdaFi=zeros(obj.A_force_index(i,2),obj.nA);
@@ -367,7 +380,9 @@ classdef finray < handle
                         obj.B_force_array(i).F=zeros(3,1);
                         obj.B_force_array(i).update;
                         pk_Fi=obj.B_force_array(i).pe;
-                        obj.B_force_array(i).F=[-obj.B_force_index(i,1)*sin(pk_Fi(3));obj.B_force_index(i,1)*cos(pk_Fi(3));0];
+                       
+                        L_tail=obj.B_force_ratio(i,2)*obj.LB-(obj.B_force_array(i).Ltotal-obj.RodB.seg_length/2);
+                        obj.B_force_array(i).F=[-obj.B_force_index(i,1)*sin(pk_Fi(3));obj.B_force_index(i,1)*cos(pk_Fi(3));(L_tail-obj.B_force_array(i).seg_length/2)*obj.B_force_index(i,1)];
                         obj.B_force_array(i).update;
                         
                         lambdaFi=zeros(obj.B_force_index(i,2),obj.nB);
@@ -424,7 +439,7 @@ classdef finray < handle
             end
             
             
-            scale=0.05;
+            scale=5;
             % 画出A受力的位置
             if obj.A_force_number ==0
                 
@@ -434,6 +449,9 @@ classdef finray < handle
                     obj.A_force_array(i).cal_pe;
                     
                     pka=obj.A_force_array(i).pe;
+                    L_tail=obj.A_force_ratio(i,2)*obj.LA-(obj.A_force_array(i).Ltotal-obj.RodA.seg_length/2);
+                    pka(1)=pka(1)-obj.A_force_array(i).seg_length*cos(sum(obj.A_force_array(i).theta))/2+L_tail*cos(sum(obj.A_force_array(i).theta));
+                    pka(2)=pka(2)-obj.A_force_array(i).seg_length*sin(sum(obj.A_force_array(i).theta))/2+L_tail*sin(sum(obj.A_force_array(i).theta));
                     PA(1)=pka(1)*cos(obj.pA(3))-pka(2)*sin(obj.pA(3))+obj.pA(1);
                     PA(2)=pka(1)*sin(obj.pA(3))+pka(2)*cos(obj.pA(3))+obj.pA(2);
                     
@@ -450,6 +468,9 @@ classdef finray < handle
                     obj.B_force_array(i).cal_pe;
                     
                     pkb=obj.B_force_array(i).pe;
+                    L_tail=obj.B_force_ratio(i,2)*obj.LB-(obj.B_force_array(i).Ltotal-obj.RodB.seg_length/2);
+                    pkb(1)=pkb(1)-obj.B_force_array(i).seg_length*cos(sum(obj.B_force_array(i).theta))/2+L_tail*cos(sum(obj.B_force_array(i).theta));
+                    pkb(2)=pkb(2)-obj.B_force_array(i).seg_length*sin(sum(obj.B_force_array(i).theta))/2+L_tail*sin(sum(obj.B_force_array(i).theta));
                     PB(1)=pkb(1)*cos(obj.pB(3))-pkb(2)*sin(obj.pB(3))+obj.pB(1);
                     PB(2)=pkb(1)*sin(obj.pB(3))+pkb(2)*cos(obj.pB(3))+obj.pB(2);
                     

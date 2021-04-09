@@ -83,7 +83,7 @@ for i=1:21
     finray_info=struct();
 
     finray_info.pA=[xA;yA;alpha];
-    finray_info.pB=[xB;yA;beta];
+    finray_info.pB=[xB;yB;beta];
 
     finray_info.LA=LA;
     finray_info.LB=LB;
