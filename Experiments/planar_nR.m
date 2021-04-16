@@ -180,7 +180,7 @@ classdef planar_nR < handle
                 end
             end
             
-            J(4:end,1:obj.n_seg)=obj.K_theta-0*temp;
+            J(4:end,1:obj.n_seg)=obj.K_theta-1*temp;
         end
         
         function Newton(obj,TOL)
