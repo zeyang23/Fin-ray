@@ -10,9 +10,10 @@ wid=14e-3;
 thi=0.3e-3;
 E=197*1e9;
 
-L0=0.3;
+L0=0.2;
 n=100;
 
+% pdes=[L0;0*L0;0];
 pdes=[0.5*L0;0.5*L0;pi/2];
 
 R1=planar_nR(E,L0,wid,thi,n,pdes);
