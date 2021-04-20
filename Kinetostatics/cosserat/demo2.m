@@ -19,7 +19,7 @@ f=@(x) check_balance(x,L,E,Iz,Fe);
 x0=zeros(3,1);
 
 options2 = optimoptions('fsolve','Display','off');
-x_cosserat=fsolve(f,x0,options2);
+[x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options2);
 
 
 % 验证结果

@@ -26,6 +26,9 @@
 % 它们已经在末端的边界条件中体现了
 % 在修正了这个问题以后，主轴分解与cosserat求得的结果就完全一致了。
 
+% cosserat仍然存在bug
+% [0;0;pi]
+
 
 %% 主轴分解
 
@@ -73,7 +76,7 @@ f=@(x) check_balance(x,L,E,Iz,pdes);
 x0=zeros(6,1);
 
 options2 = optimoptions('fsolve','Display','off');
-x_cosserat=fsolve(f,x0,options2);
+[x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options2);
 
 
 % 验证结果
