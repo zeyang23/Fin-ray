@@ -84,7 +84,7 @@ function res=check_balance(x,L,E,I,pdes)
     res=zeros(6,1);
     res(1:2)=ye(1:2)-pdes(1:2);
     res(3)=ye(3)-pdes(3);
-    res(4:5)=-Fe(1:2);
+    res(4:5)=ye(4:5)-Fe(1:2);
     res(6)=-[cos(ye(3)) sin(ye(3))]*[0 1;-1 0]*ye(4:5)+ye(6)-transpose(ye(1:2))*[0 1;-1 0]*Fe(1:2)-Fe(3);
     
 end
