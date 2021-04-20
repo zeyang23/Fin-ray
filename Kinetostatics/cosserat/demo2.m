@@ -27,7 +27,7 @@ x_cosserat=fsolve(f,x0,options2);
 span = [0 L];
 y0 = [0;0;0;x_cosserat];
 options3=odeset('MaxStep',1e-2);
-[s,Y] = ode23s(@(s,y) get_ydot(s,y,L,E,Iz,Fe), span, y0,options3);
+[s,Y] = ode45(@(s,y) get_ydot(s,y,L,E,Iz,Fe), span, y0,options3);
 
 hold on
 plot(Y(:,1),Y(:,2),'green')
@@ -44,7 +44,7 @@ function res=check_balance(x,L,E,I,Fe)
     
     options=odeset('MaxStep',1e-2);
     
-    [~,Y] = ode23s(@(s,y) get_ydot(s,y,L,E,I,Fe), span, y0,options);
+    [~,Y] = ode45(@(s,y) get_ydot(s,y,L,E,I,Fe), span, y0,options);
     
     ye=transpose(Y(end,:));
     
@@ -62,14 +62,17 @@ function ydot=get_ydot(s,y,L,E,I,Fe)
     n=y(4:5);
     m=y(6);
     
-    delta=1e-16;
-    if (L-s)<delta
-        f=Fe(1:2);
-        l=Fe(3);
-    else
-        f=[0;0];
-        l=0;
-    end
+%     delta=1e-16;
+%     if (L-s)<delta
+%         f=Fe(1:2);
+%         l=Fe(3);
+%     else
+%         f=[0;0];
+%         l=0;
+%     end
+
+    f=[0;0];
+    l=0;
     
     ydot(1:2)=[cos(theta);sin(theta)];
     ydot(3)=1/(E*I)*m;
