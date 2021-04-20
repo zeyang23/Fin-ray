@@ -15,6 +15,13 @@
 % 还需要注意的是，dirac delta function到底该怎么处理，目前的处理方式很简陋
 
 
+% 21-04-20
+% 修复了末端力矩的bug 现在tri和cosserat求出的末端的力和力矩都是一致的
+% 虽然还没有验证，但是猜想poe算出的末端力矩不同的原因是：
+% poe计算时使用的是空间雅可比，计算时等效的作用点是全局坐标系的原点
+% 而tri和cosserat计算时等效的作用点是末端，因此两者差一个末端径矢叉乘力
+
+
 %% 主轴分解
 
 clear
@@ -27,7 +34,7 @@ E=197*1e9;
 L0=1;
 n=50;
 
-pdes=[0.6*L0;0.6*L0;pi/2    ];
+pdes=[0.6*L0;0.6*L0;pi/3];
 
 R1=planar_nR(E,L0,wid,thi,n,pdes);
 
@@ -96,7 +103,7 @@ function res=check_balance(x,L,E,I,pdes)
     res(1:2)=ye(1:2)-pdes(1:2);
     res(3)=ye(3)-pdes(3);
     res(4:5)=ye(4:5)-Fe(1:2);
-    res(6)=-[cos(ye(3)) sin(ye(3))]*[0 1;-1 0]*ye(4:5)+ye(6)-transpose(ye(1:2))*[0 1;-1 0]*Fe(1:2)-Fe(3);
+    res(6)=transpose(ye(1:2))*[0 1;-1 0]*ye(4:5)+ye(6)-transpose(ye(1:2))*[0 1;-1 0]*Fe(1:2)-Fe(3);
     
 end
 
@@ -120,7 +127,7 @@ function ydot=get_ydot(s,y,L,E,I,Fe)
     
     ydot(1:2)=[cos(theta);sin(theta)];
     ydot(3)=1/(E*I)*m;
-    ydot(4:5)=f;
+    ydot(4:5)=-f;
     ydot(6)=-[cos(theta) sin(theta)]*[0 1;-1 0]*n-l;
 end
 
