@@ -1,8 +1,6 @@
-%  使用cosserat模型求解无外力、无刚性约束的Finray
+% 使用cosserat模型求解无外力、有1根刚性约束的Finray
 
-% 21-04-21
-% 求解时所用的算法很重要
-% 本例中使用levenberg-marquardt无法求解，但是使用trust-region或trust-region-dogleg就可以求解
+% 求解失败，狄拉克函数处理的估计不太对
 
 
 %% Cosserat Model shooting method
@@ -47,38 +45,45 @@ beta=beta_degree/180*pi;
 pA=[xA;yA;alpha];
 pB=[xB;yB;beta];
 
+Lcon=1/2*sqrt((xA-xB)^2+(yA-yB)^2);
+lambdaA=1/2*LA;
+lambdaB=1/2*LB;
 
-f=@(x) check_balance(x,psi,pA,pB,LA,LB,EA,EB,IA,IB);
+f=@(x) check_balance(x,Lcon,lambdaA,lambdaB,psi,pA,pB,LA,LB,EA,EB,IA,IB);
 
 
-x0=zeros(9,1);
+x0=zeros(11,1);
 
 options_A = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt');
 options_B = optimoptions('fsolve','Display','off','Algorithm','trust-region');
 options_C = optimoptions('fsolve','Display','off','Algorithm','trust-region-dogleg');
-[x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options_C);
+[X_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options_B);
 
 
 %% 验证结果
 
-na_0=x_cosserat(1:2);
-ma_0=x_cosserat(3);
+na_0=X_cosserat(1:2);
+ma_0=X_cosserat(3);
 
-nb_0=x_cosserat(4:5);
-mb_0=x_cosserat(6);
+nb_0=X_cosserat(4:5);
+mb_0=X_cosserat(6);
+
+fcon=X_cosserat(10);
+gamma=X_cosserat(11);
 
 span_a = [0 LA];
 ya_0 = [pA;na_0;ma_0];
 options_a=odeset('MaxStep',1e-2);
-
-[~,YA] = ode45(@(s,y) get_ydot(s,y,LA,EA,IA), span_a, ya_0,options_a);
+FA=[-fcon*cos(gamma);-fcon*sin(gamma)];
+[~,YA] = ode45(@(s,y) get_ydot(s,y,lambdaA,FA,LA,EA,IA), span_a, ya_0,options_a);
 ye_a=transpose(YA(end,:));
 
 
 span_b = [0 LB];
 yb_0 = [pB;nb_0;mb_0];
 options_b=odeset('MaxStep',1e-2);
-[~,YB] = ode45(@(s,y) get_ydot(s,y,LB,EB,IB), span_b, yb_0,options_b);
+FB=-FA;
+[~,YB] = ode45(@(s,y) get_ydot(s,y,lambdaB,FB,LB,EB,IB), span_b, yb_0,options_b);
 ye_b=transpose(YB(end,:));
 
 
@@ -89,7 +94,7 @@ axis equal
 
 
 %%
-function res=check_balance(x,psi,pA,pB,LA,LB,EA,EB,IA,IB)
+function res=check_balance(x,Lcon,lambdaA,lambdaB,psi,pA,pB,LA,LB,EA,EB,IA,IB)
     
     na_0=x(1:2);
     ma_0=x(3);
@@ -99,23 +104,27 @@ function res=check_balance(x,psi,pA,pB,LA,LB,EA,EB,IA,IB)
     
     pe=x(7:9);
     
+    fcon=x(10);
+    gamma=x(11);
+    
     
     span_a = [0 LA];
     ya_0 = [pA;na_0;ma_0];
     options_a=odeset('MaxStep',1e-2);
-    
-    [~,YA] = ode45(@(s,y) get_ydot(s,y,LA,EA,IA), span_a, ya_0,options_a);
+    FA=[-fcon*cos(gamma);-fcon*sin(gamma)];
+    [~,YA] = ode45(@(s,y) get_ydot(s,y,lambdaA,FA,LA,EA,IA), span_a, ya_0,options_a);
     ye_a=transpose(YA(end,:));
     
     
     span_b = [0 LB];
     yb_0 = [pB;nb_0;mb_0];
     options_b=odeset('MaxStep',1e-2);
-    [~,YB] = ode45(@(s,y) get_ydot(s,y,LB,EB,IB), span_b, yb_0,options_b);
+    FB=-FA;
+    [~,YB] = ode45(@(s,y) get_ydot(s,y,lambdaB,FB,LB,EB,IB), span_b, yb_0,options_b);
     ye_b=transpose(YB(end,:));
     
     
-    res=zeros(9,1);
+    res=zeros(11,1);
     res(1:2)=ye_a(1:2)-pe(1:2);
     res(3)=ye_a(3)-pe(3);
     
@@ -125,11 +134,13 @@ function res=check_balance(x,psi,pA,pB,LA,LB,EA,EB,IA,IB)
     res(7:8)=ye_a(4:5)+ye_b(4:5);
     res(9)=transpose(ye_a(1:2))*[0 1;-1 0]*ye_a(4:5)+ye_a(6)...
           +transpose(ye_b(1:2))*[0 1;-1 0]*ye_b(4:5)+ye_b(6);
+      
+    res(10:11)=ye_a(1:2)+[Lcon*cos(gamma);Lcon*sin(gamma)]-ye_b(1:2);
 
 end
 
 
-function ydot=get_ydot(s,y,L,E,I)
+function ydot=get_ydot(s,y,lambda,F,L,E,I)
     ydot=zeros(size(y));
     
     r=y(1:2);
@@ -137,16 +148,13 @@ function ydot=get_ydot(s,y,L,E,I)
     n=y(4:5);
     m=y(6);
     
-%     delta=1e-16;
-%     if (L-s)<delta
-%         f=Fe(1:2);
-%         l=Fe(3);
-%     else
-%         f=[0;0];
-%         l=0;
-%     end
+    delta=1e-2;
+    if norm(s-lambda)<=delta/2
+        f=F/delta; 
+    else
+        f=[0;0];
+    end
     
-    f=[0;0];
     l=0;
 
     ydot(1:2)=[cos(theta);sin(theta)];
