@@ -29,6 +29,21 @@
 % cosserat仍然存在bug
 % [0;0;pi]
 
+% 21-04-21
+% 之前的[0;0;pi]求解结果的bug跟初值和所选用的算法有关
+% 如果使用默认的trust-region-dogleg，如果以zeros(6,1)为初值，是无法求出结果的
+% 需要将初值换成与真实值更接近的值才能求出来
+% 同时，如果使用trust-region-dogleg，对于[0.3*L0;0.3*L0;pi/2]会求解出与主轴分解不同的结果
+
+% 对于[0;0;pi] 如果使用levenberg-marquardt或trust-region，在以zeros(6,1)为初值时仍然能够求出结果
+% 对于[0.3*L0;0.3*L0;pi/2] 如果使用levenberg-marquardt或trust-region，会求出与主轴分解相同的结果
+
+% 目前的结论是：不要用默认的trust-region-dogleg
+
+% 此外，关于ode45的步长，目前程序里设定的是0.01 实际上不用取这么小
+% 例如，取步长为0.1算出来的效果也不错。
+
+
 
 %% 主轴分解
 
@@ -42,7 +57,9 @@ E=197*1e9;
 L0=1;
 n=50;
 
-pdes=[0.6*L0;0.6*L0;pi/3];
+pdes=[0;0;pi];
+% pdes=[0.3*L0;0.3*L0;pi/2];
+% pdes=[0.6*L0;0.6*L0;pi/2];
 
 R1=planar_nR(E,L0,wid,thi,n,pdes);
 
@@ -73,10 +90,13 @@ L=1;
 
 f=@(x) check_balance(x,L,E,Iz,pdes);
 
+
 x0=zeros(6,1);
 
-options2 = optimoptions('fsolve','Display','off');
-[x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options2);
+options_a = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt');
+options_b = optimoptions('fsolve','Display','off','Algorithm','trust-region');
+options_c = optimoptions('fsolve','Display','off','Algorithm','trust-region-dogleg');
+[x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options_a);
 
 
 % 验证结果
