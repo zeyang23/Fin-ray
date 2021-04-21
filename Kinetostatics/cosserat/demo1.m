@@ -43,6 +43,15 @@
 % 此外，关于ode45的步长，目前程序里设定的是0.01 实际上不用取这么小
 % 例如，取步长为0.1算出来的效果也不错。
 
+% 21-04-21
+% 对于主轴分解法，有时也会出现使用trust-region-dogleg算不出来的情况
+% 建议以后就别用trust-region-dogleg了，这玩意不靠谱。。。
+
+% 21-04-21
+% 柔性板的变形问题存在多解现象
+% 对于[0.1*L0;0.3*L0;pi/3]
+% cosserat使用3种算法(LM TR TRD) 分别能算出三个模态的解，还是很有意思的
+
 
 
 %% 主轴分解
@@ -58,6 +67,7 @@ L0=1;
 n=50;
 
 pdes=[0;0;pi];
+% pdes=[0.1*L0;0.3*L0;pi/3]
 % pdes=[0.3*L0;0.3*L0;pi/2];
 % pdes=[0.6*L0;0.6*L0;pi/2];
 
@@ -65,7 +75,7 @@ R1=planar_nR(E,L0,wid,thi,n,pdes);
 
 
 f=@(x) cal_balance(x,R1);
-options1 = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',false,'Display','off');
+options1 = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',false,'Display','off','Algorithm','levenberg-marquardt');
 x0=zeros(R1.n_seg+3,1);
 [x_nR,fval_nR,exitflag_nR,output_nR] = fsolve(f,x0,options1);
 
