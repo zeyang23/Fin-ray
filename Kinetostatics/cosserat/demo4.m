@@ -1,7 +1,8 @@
 % 使用cosserat模型求解无外力、有1根刚性约束的Finray
+% 尝试使用分段的方法来处理
 
-% 求解失败，狄拉克函数处理的估计不太对
-
+% 21-04-21
+% 分段处理的效果不错，能够求解
 
 %% Cosserat Model shooting method
 clear
@@ -57,40 +58,57 @@ x0=zeros(11,1);
 options_A = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt');
 options_B = optimoptions('fsolve','Display','off','Algorithm','trust-region');
 options_C = optimoptions('fsolve','Display','off','Algorithm','trust-region-dogleg');
-[X_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options_B);
+[x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options_B);
 
 
-%% 验证结果
 
-na_0=X_cosserat(1:2);
-ma_0=X_cosserat(3);
+%% 验证求解结果
+na_0=x_cosserat(1:2);
+ma_0=x_cosserat(3);
 
-nb_0=X_cosserat(4:5);
-mb_0=X_cosserat(6);
+nb_0=x_cosserat(4:5);
+mb_0=x_cosserat(6);
 
-fcon=X_cosserat(10);
-gamma=X_cosserat(11);
+pe=x_cosserat(7:9);
 
-span_a = [0 LA];
-ya_0 = [pA;na_0;ma_0];
+fcon=x_cosserat(10);
+gamma=x_cosserat(11);
+    
+    
+span_a1 = [0 lambdaA];
+ya1_0 = [pA;na_0;ma_0];
 options_a=odeset('MaxStep',1e-2);
+[~,YA_in] = ode45(@(s,y) get_ydot(s,y,LA,EA,IA), span_a1, ya1_0,options_a);
+yin_a=transpose(YA_in(end,:));
+
 FA=[-fcon*cos(gamma);-fcon*sin(gamma)];
-[~,YA] = ode45(@(s,y) get_ydot(s,y,lambdaA,FA,LA,EA,IA), span_a, ya_0,options_a);
+span_a2 = [lambdaA,LA];
+ya2_0=yin_a+[0;0;0;-FA;0];
+[~,YA] = ode45(@(s,y) get_ydot(s,y,LA,EA,IA), span_a2, ya2_0,options_a);
 ye_a=transpose(YA(end,:));
 
 
-span_b = [0 LB];
-yb_0 = [pB;nb_0;mb_0];
+span_b1 = [0 lambdaB];
+yb1_0 = [pB;nb_0;mb_0];
 options_b=odeset('MaxStep',1e-2);
+[~,YB_in] = ode45(@(s,y) get_ydot(s,y,LB,EB,IB), span_b1, yb1_0,options_b);
+yin_b=transpose(YB_in(end,:));
+
 FB=-FA;
-[~,YB] = ode45(@(s,y) get_ydot(s,y,lambdaB,FB,LB,EB,IB), span_b, yb_0,options_b);
+span_b2 = [lambdaB,LB];
+yb2_0=yin_b+[0;0;0;-FB;0];
+[~,YB] = ode45(@(s,y) get_ydot(s,y,LA,EA,IA), span_b2, yb2_0,options_b);
 ye_b=transpose(YB(end,:));
 
+YA_total=[YA_in(:,1) YA_in(:,2);YA(:,1) YA(:,2)];
+YB_total=[YB_in(:,1) YB_in(:,2);YB(:,1) YB(:,2)];
 
 hold on
-plot(YA(:,1),YA(:,2))
-plot(YB(:,1),YB(:,2))
+plot(YA_total(:,1),YA_total(:,2))
+plot(YB_total(:,1),YB_total(:,2))
 axis equal
+
+plot([yin_a(1) yin_b(1)],[yin_a(2) yin_b(2)])
 
 
 %%
@@ -108,19 +126,29 @@ function res=check_balance(x,Lcon,lambdaA,lambdaB,psi,pA,pB,LA,LB,EA,EB,IA,IB)
     gamma=x(11);
     
     
-    span_a = [0 LA];
-    ya_0 = [pA;na_0;ma_0];
+    span_a1 = [0 lambdaA];
+    ya1_0 = [pA;na_0;ma_0];
     options_a=odeset('MaxStep',1e-2);
+    [~,YA_in] = ode45(@(s,y) get_ydot(s,y,LA,EA,IA), span_a1, ya1_0,options_a);
+    yin_a=transpose(YA_in(end,:));
+    
     FA=[-fcon*cos(gamma);-fcon*sin(gamma)];
-    [~,YA] = ode45(@(s,y) get_ydot(s,y,lambdaA,FA,LA,EA,IA), span_a, ya_0,options_a);
+    span_a2 = [lambdaA,LA];
+    ya2_0=yin_a+[0;0;0;-FA;0];
+    [~,YA] = ode45(@(s,y) get_ydot(s,y,LA,EA,IA), span_a2, ya2_0,options_a);
     ye_a=transpose(YA(end,:));
     
     
-    span_b = [0 LB];
-    yb_0 = [pB;nb_0;mb_0];
+    span_b1 = [0 lambdaB];
+    yb1_0 = [pB;nb_0;mb_0];
     options_b=odeset('MaxStep',1e-2);
+    [~,YB_in] = ode45(@(s,y) get_ydot(s,y,LB,EB,IB), span_b1, yb1_0,options_b);
+    yin_b=transpose(YB_in(end,:));
+    
     FB=-FA;
-    [~,YB] = ode45(@(s,y) get_ydot(s,y,lambdaB,FB,LB,EB,IB), span_b, yb_0,options_b);
+    span_b2 = [lambdaB,LB];
+    yb2_0=yin_b+[0;0;0;-FB;0];
+    [~,YB] = ode45(@(s,y) get_ydot(s,y,LA,EA,IA), span_b2, yb2_0,options_b);
     ye_b=transpose(YB(end,:));
     
     
@@ -135,12 +163,12 @@ function res=check_balance(x,Lcon,lambdaA,lambdaB,psi,pA,pB,LA,LB,EA,EB,IA,IB)
     res(9)=transpose(ye_a(1:2))*[0 1;-1 0]*ye_a(4:5)+ye_a(6)...
           +transpose(ye_b(1:2))*[0 1;-1 0]*ye_b(4:5)+ye_b(6);
       
-    res(10:11)=ye_a(1:2)+[Lcon*cos(gamma);Lcon*sin(gamma)]-ye_b(1:2);
+    res(10:11)=yin_a(1:2)+[Lcon*cos(gamma);Lcon*sin(gamma)]-yin_b(1:2);
 
 end
 
 
-function ydot=get_ydot(s,y,lambda,F,L,E,I)
+function ydot=get_ydot(s,y,L,E,I)
     ydot=zeros(size(y));
     
     r=y(1:2);
@@ -148,13 +176,7 @@ function ydot=get_ydot(s,y,lambda,F,L,E,I)
     n=y(4:5);
     m=y(6);
     
-    delta=1e-2;
-    if norm(s-lambda)<=delta/2
-        f=F/delta; 
-    else
-        f=[0;0];
-    end
-    
+    f=[0;0];
     l=0;
 
     ydot(1:2)=[cos(theta);sin(theta)];
