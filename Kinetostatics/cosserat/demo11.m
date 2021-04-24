@@ -89,7 +89,7 @@ x0=zeros(15,1);
 options_A = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt');
 options_B = optimoptions('fsolve','Display','off','Algorithm','trust-region');
 options_C = optimoptions('fsolve','Display','off','Algorithm','trust-region-dogleg');
-[x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options_B);
+[x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options_C);
 % [x_cosserat,resnorm,residual,exitflag_cosserat,output_cosserat] = lsqnonlin(f,x0);
 
 
