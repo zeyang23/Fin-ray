@@ -59,7 +59,7 @@ lambdaB3=3/4*LB;
 lambda1=0.2*LA;
 lambda2=0.8*LA;
 
-press=0.5;
+press=0.3;
 
 
 problem_info=struct();
@@ -201,7 +201,7 @@ noise=0.2*(-1 + 2*rand);
 K1=K1_true+noise;
 
 fprintf('K1_true: %f\n',K1_true);
-fprintf('K1: %f\n',K1);
+fprintf('K1_sensor: %f\n',K1);
 
 fprintf('press_true: %f\n',press);
 
@@ -246,7 +246,7 @@ clear
 
 load('x_shape.mat');
 
-fprintf('press_true: %f\n',x_shape(16));
+fprintf('press_solve: %f\n',x_shape(16));
 
 wid=14e-3;
 thi=0.3e-3;

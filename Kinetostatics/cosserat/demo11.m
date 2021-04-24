@@ -3,6 +3,13 @@
 
 % 三角函数线载荷
 
+% 21-04-24
+% 鲁棒性堪忧
+% 在一些特定的参数下解不出来
+% 例如lambda1=0.2*LA;lambda2=0.8*LA;press=0.6;
+
+
+
 %% Cosserat Model shooting method
 clear
 clc
