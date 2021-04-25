@@ -1,5 +1,8 @@
 % 有1根柔性支撑的finray，作用均匀压力
 
+% 21-04-25
+% 可以求解，鲁棒性存疑
+
 
 %% Cosserat Model shooting method
 clear
@@ -14,13 +17,13 @@ Iz=1/12*thi.^3*wid;
 
 L0=0.25;
 
-LA=0.8*L0;
+LA=L0;
 LB=L0;
 
 EA=E;
 EB=E;
 
-EC=1e10;
+EC=0.5e9;
 
 IA=Iz;
 IB=Iz;
@@ -57,7 +60,7 @@ lambdaB=1/2*LB;
 lambda1=0.4*LA;
 lambda2=0.6*LA;
 
-press=0;
+press=25;
 
 f=@(x) check_balance(x,lambda1,lambda2,press,Lcon,lambdaA,lambdaB,psi,pA,pB,LA,LB,EA,EB,EC,IA,IB,IC);
 
