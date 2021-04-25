@@ -168,7 +168,7 @@ function res=check_balance(x,lambda1,lambda2,press,Lcon,lambdaA,lambdaB,psi,pA,p
     FB=-FA;
     span_b2 = [lambdaB,LB];
     yb2_0=yin_b+[0;0;0;-FB;0];
-    [~,YB] = ode45(@(s,y) get_ydot_B(s,y,LA,EA,IA), span_b2, yb2_0,options_b);
+    [~,YB] = ode45(@(s,y) get_ydot_B(s,y,LB,EB,IB), span_b2, yb2_0,options_b);
     ye_b=transpose(YB(end,:));
     
     
