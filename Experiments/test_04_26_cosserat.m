@@ -28,9 +28,9 @@ load('coff_sensor_1.mat');
 load('coff_sensor_2.mat');
 load('coff_sensor_3.mat');
 
-% coff_sensor_1(2)=0;
-% coff_sensor_2(2)=0;
-% coff_sensor_3(2)=0;
+coff_sensor_1(2)=0;
+coff_sensor_2(2)=0;
+coff_sensor_3(2)=0;
 
 
 U1_0=0;
