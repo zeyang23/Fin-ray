@@ -1,6 +1,6 @@
-% 基于cosserat model
-% 单个柔性板的shape sensing
-
+% Experiment-04-26
+% Planar Rod Shape Sensing
+% Algorithm: Cosserat
 
 clear
 clc
@@ -11,10 +11,12 @@ L0=0.25;
 % 传感器长度
 sensor_length=38e-3;
 
-% 3个传感器的位置
-S1=59e-3;
-S2=125e-3;
-S3=191e-3;
+% 传感器中心的位置
+
+% 从固定端到活动端，依次命名为A B C
+SA=59e-3;
+SB=125e-3;
+SC=191e-3;
 
 
 wid=14e-3;
@@ -56,7 +58,7 @@ KC=DeltaC/sensor_length;
 
 
 % 根据曲率反解柔性板形状
-g=@(x) check_shape(x,L0,E,Iz,KA,KB,KC,S1,S2,S3);
+g=@(x) check_shape(x,L0,E,Iz,KA,KB,KC,SA,SB,SC);
 
 
 x0=zeros(6,1);
@@ -69,13 +71,20 @@ options_c = optimoptions('fsolve','Display','off','Algorithm','trust-region-dogl
 span = [0 L0];
 y0 = [0;0;0;x_shape(1:3)];
 options3=odeset('MaxStep',1e-2);
-sol_Y2 = ode45(@(s,y) get_ydot(s,y,L0,E,Iz,x_shape(4:6)), span, y0,options3);
+sol_Y = ode45(@(s,y) get_ydot(s,y,L0,E,Iz,x_shape(4:6)), span, y0,options3);
 
 hold on
-plot(sol_Y2.y(1,:),sol_Y2.y(2,:),'-b','MarkerSize',2)
+plot(sol_Y.y(1,:),sol_Y.y(2,:),'-b','MarkerSize',2)
 
 axis equal
 
+YA=deval(sol_Y,SA);
+YB=deval(sol_Y,SB);
+YC=deval(sol_Y,SC);
+
+plot(YA(1),YA(2),'o')
+plot(YB(1),YB(2),'o')
+plot(YC(1),YC(2),'o')
 
 function res=check_shape(x,L,E,I,K1,K2,K3,S1,S2,S3)
     n0=x(1:2);
@@ -103,29 +112,6 @@ function res=check_shape(x,L,E,I,K1,K2,K3,S1,S2,S3)
     res(4:5)=ye(4:5)-Fe(1:2);
     res(6)=transpose(ye(1:2))*[0 1;-1 0]*ye(4:5)+ye(6)-transpose(ye(1:2))*[0 1;-1 0]*Fe(1:2)-Fe(3);
 
-end
-
-function res=check_balance(x,L,E,I,pdes)
-    
-    n0=x(1:2);
-    m0=x(3);
-    Fe=x(4:6);
-    
-    span = [0 L];
-    y0 = [0;0;0;n0;m0];
-    
-    options=odeset('MaxStep',1e-2);
-    
-    [~,Y] = ode45(@(s,y) get_ydot(s,y,L,E,I,Fe), span, y0,options);
-    
-    ye=transpose(Y(end,:));
-    
-    res=zeros(6,1);
-    res(1:2)=ye(1:2)-pdes(1:2);
-    res(3)=ye(3)-pdes(3);
-    res(4:5)=ye(4:5)-Fe(1:2);
-    res(6)=transpose(ye(1:2))*[0 1;-1 0]*ye(4:5)+ye(6)-transpose(ye(1:2))*[0 1;-1 0]*Fe(1:2)-Fe(3);
-    
 end
 
 
