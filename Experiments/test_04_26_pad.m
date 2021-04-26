@@ -1,4 +1,6 @@
-% 近似为圆，给圆的半径，再转换成角度
+% Experiment-04-26
+% Planar Rod Shape Sensing
+% Algorithm: Principle Axis Decomposition
 
 clear
 clc
