@@ -62,26 +62,54 @@ load('coff_sensor_1.mat');
 load('coff_sensor_2.mat');
 load('coff_sensor_3.mat');
 
-coff_sensor_1(2)=0;
-coff_sensor_2(2)=0;
-coff_sensor_3(2)=0;
+% coff_sensor_1(2)=0;
+% coff_sensor_2(2)=0;
+% coff_sensor_3(2)=0;
 
 
-U1_0=0;
-U2_0=0;
-U3_0=0;
+% 零位时的电压
+U1_0=1.93;
+U2_0=2.79;
+U3_0=1.40;
 
-U1=0;
-U2=0;
-U3=0;
+% % 第1组数据
+% U1=2.01;
+% U2=3.00;
+% U3=1.43;
+
+% % 第2组数据
+% U1=2.12;
+% U2=3.15;
+% U3=1.45;
+
+% % 第3组数据
+% U1=2.11;
+% U2=3.30;
+% U3=1.44;
+
+% % 第4组数据
+% U1=1.97;
+% U2=2.95;
+% U3=1.45;
+
+% % 第5组数据
+% U1=2.00;
+% U2=2.79;
+% U3=1.50;
+
+% 第6组数据
+U1=1.96;
+U2=2.77;
+U3=1.45;
+
 
 U1_delta=U1-U1_0;
 U2_delta=U2-U2_0;
 U3_delta=U3-U3_0;
 
-DeltaA=polyval(coff_sensor_1,U1_delta);
-DeltaB=polyval(coff_sensor_2,U2_delta);
-DeltaC=polyval(coff_sensor_3,U3_delta);
+DeltaA=polyval(coff_sensor_3,U3_delta);
+DeltaB=polyval(coff_sensor_1,U1_delta);
+DeltaC=polyval(coff_sensor_2,U2_delta);
 
 
 f_sensor=@(x) myfun(x,E,L0,wid,thi,n,DA,DB,DC,DeltaA,DeltaB,DeltaC);
@@ -105,6 +133,10 @@ plot(sensor1_pos(:,1),sensor1_pos(:,2),'o')
 plot(sensor2_pos(:,1),sensor2_pos(:,2),'o')
 plot(sensor3_pos(:,1),sensor3_pos(:,2),'o')
 
+axis([0 L0 0 3/5*L0]);
+axis equal
+
+hold on
 
 Delta1_degree=DeltaA/pi*180;
 Delta2_degree=DeltaB/pi*180;

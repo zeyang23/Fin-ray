@@ -30,26 +30,54 @@ load('coff_sensor_1.mat');
 load('coff_sensor_2.mat');
 load('coff_sensor_3.mat');
 
-coff_sensor_1(2)=0;
-coff_sensor_2(2)=0;
-coff_sensor_3(2)=0;
+% coff_sensor_1(2)=0;
+% coff_sensor_2(2)=0;
+% coff_sensor_3(2)=0;
 
 
-U1_0=0;
-U2_0=0;
-U3_0=0;
+% 零位时的电压
+U1_0=1.93;
+U2_0=2.79;
+U3_0=1.40;
 
-U1=0;
-U2=0;
-U3=0;
+% % 第1组数据
+% U1=2.01;
+% U2=3.00;
+% U3=1.43;
+
+% % 第2组数据
+% U1=2.12;
+% U2=3.15;
+% U3=1.45;
+
+% % 第3组数据
+% U1=2.11;
+% U2=3.30;
+% U3=1.44;
+
+% % 第4组数据
+% U1=1.97;
+% U2=2.95;
+% U3=1.45;
+
+% % 第5组数据
+% U1=2.00;
+% U2=2.79;
+% U3=1.50;
+
+% 第6组数据
+U1=1.96;
+U2=2.77;
+U3=1.45;
+
 
 U1_delta=U1-U1_0;
 U2_delta=U2-U2_0;
 U3_delta=U3-U3_0;
 
-DeltaA=polyval(coff_sensor_1,U1_delta);
-DeltaB=polyval(coff_sensor_2,U2_delta);
-DeltaC=polyval(coff_sensor_3,U3_delta);
+DeltaA=polyval(coff_sensor_3,U3_delta);
+DeltaB=polyval(coff_sensor_1,U1_delta);
+DeltaC=polyval(coff_sensor_2,U2_delta);
 
 
 KA=DeltaA/sensor_length;
@@ -70,7 +98,7 @@ options_c = optimoptions('fsolve','Display','off','Algorithm','trust-region-dogl
 
 span = [0 L0];
 y0 = [0;0;0;x_shape(1:3)];
-options3=odeset('MaxStep',1e-2);
+options3=odeset('MaxStep',1e-3);
 sol_Y = ode45(@(s,y) get_ydot(s,y,L0,E,Iz,x_shape(4:6)), span, y0,options3);
 
 hold on
@@ -85,6 +113,11 @@ YC=deval(sol_Y,SC);
 plot(YA(1),YA(2),'o')
 plot(YB(1),YB(2),'o')
 plot(YC(1),YC(2),'o')
+
+axis([0 L0 0 3/5*L0]);
+axis equal
+
+hold on
 
 function res=check_shape(x,L,E,I,K1,K2,K3,S1,S2,S3)
     n0=x(1:2);
