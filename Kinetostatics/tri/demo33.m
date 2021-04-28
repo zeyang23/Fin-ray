@@ -91,6 +91,10 @@ res_up_series=[];
 theta_down_series=[];
 res_down_series=[];
 
+vid = VideoWriter('finray_static_friction');
+writerObj.FrameRate = 30;
+open(vid);
+
 for i=1:length(DELTA_series)
     delta=DELTA_series(i);
     
@@ -147,7 +151,14 @@ for i=1:length(DELTA_series)
 
     
     rectangle('Position',[Xc-radius,Yc-radius,2*radius,2*radius],'Curvature',[1,1],'linewidth',1,'edgecolor','r')
-    pause(0.02);
+    
+    
+    axis([0.4,0.6,0,0.25])
+    
+    set(gcf,'doublebuffer','on');
+    drawnow;    
+    Frame = getframe;    
+    writeVideo(vid,Frame);
     
     if i~=length(DELTA_series)
         clf;
@@ -155,6 +166,7 @@ for i=1:length(DELTA_series)
     
 end
 
+close(vid);
 
 %%
 
