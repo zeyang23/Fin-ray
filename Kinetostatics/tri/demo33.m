@@ -93,6 +93,9 @@ res_down_series=[];
 
 for i=1:length(DELTA_series)
     delta=DELTA_series(i);
+    
+    
+    % 求解上侧
     f1=@(theta_up) solve_up(theta_up,delta,Xc,Yc,radius,Theta0_up,L0_up,problem_info_init,0);
 
     lb_1=Theta0_up;
@@ -124,38 +127,23 @@ for i=1:length(DELTA_series)
     Theta0_up=theta_up_solve;
     
     
+   
+    % 求解下侧
+
+    R1=planar_nR_flex(E,L0_down,wid,thi,nA,[0;0;0]);
     
-%     f2=@(theta_down) solve_down(theta_down,DELTA,Xc,Yc,radius,Theta0_down,L0_down,problem_info_init,0);
-%     
-%     lb_2=-pi;
-%     ub_2=Theta0_down;
-%     [theta_down_solve,resnorm,residual,exitflag_lsq,output_lsq] = lsqnonlin(f2,Theta0_down,lb_2,ub_2);
-% %     [theta_up_solve,fval_fsolve,exitflag_fsolve,output_fsolve] = fsolve(f2,Theta0_down);
-% %     resnorm=norm(fval_fsolve);
-%     
-%     theta_down_series(i)=theta_down_solve;
-%     res_down_series(i)=resnorm;
-% 
-%     X_down=Xc+radius*cos(theta_down_solve);
-%     Y_down=Yc+radius*sin(theta_down_solve);
-%     
-%     problem_info=problem_info_init;
-%     problem_info.x_des=X_down;
-%     problem_info.y_des=Y_down;
-%     problem_info.phi_des=theta_down_solve+pi/2;
-%     
-%     problem_info.xA=problem_info.xA-delta;
-%     
-%     problem_info.LA=L0_down-radius*(Theta0_down-theta_down_solve);
-%     
-%     x=solve_rod(problem_info,1);
-%     clear problem_info
-%     
-%     L0_down=L0_down-radius*(Theta0_down-theta_down_solve);
-%     Theta0_down=theta_down_solve;
+    x0=zeros(nA+2,1);
+    x0(end-1)=L0_down;
+
+    options = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',false);
+
+    f=@(x) myfun_rod(x,xA-delta,yA,alpha,radius,Xc,Yc,R1);
+    [x_solve,fval,exitflag,output] = fsolve(f,x0,options);
+
+    R1.cal_posall;
+    plot_abs_pos(R1.pos_all,alpha,[xA-delta,yA]);
     
-    
-    
+    L0_down=x_solve(end-1);
 
     
     rectangle('Position',[Xc-radius,Yc-radius,2*radius,2*radius],'Curvature',[1,1],'linewidth',1,'edgecolor','r')
@@ -169,25 +157,6 @@ end
 
 
 %%
-function r=solve_down(theta_down,DELTA,Xc,Yc,radius,Theta0_down,L0_down,problem_info_init,plot_flag)
-    X_down=Xc+radius*cos(theta_down);
-    Y_down=Yc+radius*sin(theta_down);
-    
-    problem_info=problem_info_init;
-    problem_info.x_des=X_down;
-    problem_info.y_des=Y_down;
-    problem_info.phi_des=theta_down+pi/2;
-    
-    problem_info.xA=problem_info.xA-DELTA;
-    
-    problem_info.LA=L0_down-radius*(Theta0_down-theta_down);
-    
-    x=solve_rod(problem_info,plot_flag);
-    
-    alpha=problem_info.alpha;
-    
-    r=[cos(theta_down) sin(theta_down)]*[cos(alpha) -sin(alpha);sin(alpha) cos(alpha)]*[x(end-2);x(end-1)];
-end
 
 function r=solve_up(theta_up,DELTA,Xc,Yc,radius,Theta_0,L0_up,problem_info_init,plot_flag)
     X_up=Xc+radius*cos(theta_up);
@@ -210,52 +179,6 @@ function r=solve_up(theta_up,DELTA,Xc,Yc,radius,Theta_0,L0_up,problem_info_init,
     
 end
 
-
-function x=solve_rod(problem_info,plot_flag)
-    L0=problem_info.LA;
-    
-    E=problem_info.E;
-    
-    wid=problem_info.wid;
-    thi=problem_info.thi;
-    nA=problem_info.nA;
-    
-    xA=problem_info.xA;
-    yA=problem_info.yA;
-    alpha=problem_info.alpha;
-    
-    pA=[xA;yA;alpha];
-
-    x_des=problem_info.x_des;
-    y_des=problem_info.y_des;
-    phi_des=problem_info.phi_des;
-    
-    pdes=[x_des;y_des;phi_des];
-    
-    R1=planar_nR(E,L0,wid,thi,nA,pdes);
-    
-    f=@(x) cal_balance(x,R1,pA,pdes);
-    options = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',false,'Display','off');
-    x0=zeros(R1.n_seg+3,1);
-    [x_solve,fval,exitflag,output] = fsolve(f,x0,options);
-    
-    x=x_solve;
-    
-    if exitflag<=0
-        error('fail')
-    end
-
-    R1.theta=x_solve(1:R1.n_seg);
-    R1.F=x_solve(R1.n_seg+1:R1.n_seg+3);
-
-    R1.update;
-    R1.cal_posall;
-    
-    if plot_flag ==1
-
-        plot_abs_pos(R1.pos_all,alpha,[xA,yA]);
-    end
-end
 
 function x=solve_finray(problem_info,plot_flag)
     wid=problem_info.wid;
@@ -357,25 +280,40 @@ function [r,J]=myfun(x,nA,nB,A,B,b,RA,RB)
 end
 
 
-function [r,J]=cal_balance(x,Rod,pA,pdes)
-    alpha=pA(3);
+function [r,J]=myfun_rod(x,xA,yA,alpha,radius,center_x,center_y,R1)
+    thetaA=x(1:R1.n_seg);
+    L_new=x(end-1);
+    F_new=x(end);
     
-    alpha_degree=alpha/pi*180;
+    R1.theta=thetaA;
+    R1.change_length(L_new);
+   
+    R1.F=[F_new*cos(R1.pe(3));F_new*sin(R1.pe(3));0];
     
-    Rod.theta=x(1:Rod.n_seg);
-    Rod.F=x(Rod.n_seg+1:Rod.n_seg+3);
+    R1.update;
     
-    Rod.update;
+    r=zeros(R1.n_seg+2,1);
     
-    r=zeros(size(x));
-    J=zeros(length(x));
+    r(1:R1.n_seg)=R1.K_theta*R1.theta-transpose(R1.Jacobian)*R1.F;
     
-    r(1:3)=rotz(alpha_degree)*Rod.pe+pA-pdes;
-    r(4:Rod.n_seg+3)=Rod.K_theta*Rod.theta-transpose(Rod.Jacobian)*Rod.F;
+    r(end-1:end)=[center_x-xA+radius*sin(R1.pe(3)+alpha)-(R1.pe(1)*cos(alpha)-R1.pe(2)*sin(alpha));
+                  center_y-yA-radius*cos(R1.pe(3)+alpha)-(R1.pe(1)*sin(alpha)+R1.pe(2)*cos(alpha))];
+              
+    J=zeros(R1.n_seg+2);
     
-    J=Rod.cal_rdot;
-    J(1:3,1:Rod.n_seg)=rotz(alpha_degree)*Rod.Jacobian;
-    J(4:end,1:Rod.n_seg)=Rod.K_theta-Rod.partial;
-    J(4:end,end-2:end)=-transpose(Rod.Jacobian);
+    J(1:R1.n_seg,1:R1.n_seg)=R1.K_theta-R1.partial-transpose(R1.Jacobian)*[-F_new*sin(R1.pe(3));F_new*cos(R1.pe(3));0]*ones(1,R1.n_seg);
+    
+    temp=transpose(R1.Jacobian);
+    temp(:,3)=zeros(1,R1.n_seg);
+    temp=1/L_new*temp;
+    
+    J(1:R1.n_seg,R1.n_seg+1)=-1/L_new*R1.K_theta*R1.theta-temp*R1.F;
+    
+    J(1:R1.n_seg,end)=-transpose(R1.Jacobian)*[cos(R1.pe(3));sin(R1.pe(3));0];
+
+    temp2=R1.Jacobian;
+    J(end-1:end,1:R1.n_seg)=[radius*cos(R1.pe(3)+alpha)*ones(1,R1.n_seg);radius*sin(R1.pe(3)+alpha)*ones(1,R1.n_seg)]-[cos(alpha) -sin(alpha);sin(alpha) cos(alpha)]*temp2(1:2,:);
+    
+    J(end-1:end,end-1)=-[cos(alpha) -sin(alpha);sin(alpha) cos(alpha)]*1/L_new*[R1.pe(1);R1.pe(2)];
     
 end
