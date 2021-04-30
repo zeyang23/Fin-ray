@@ -22,13 +22,13 @@ clc
 xA=0;
 yA=0;
 
-xB=43.34;
-yB=16.18;
+xB=73.24;
+yB=0;
 
 
-psi_degree=21.29;
 alpha_degree=90;
-beta_degree=110.88;
+beta_degree=116;
+psi_degree=beta_degree-alpha_degree;
 
 psi=psi_degree/180*pi;
 alpha=alpha_degree/180*pi;
@@ -39,13 +39,12 @@ nA=50;
 nB=50;
 
 
-LA=129.32;
-LB=121.16;
+LA=(xB-xA)/tan(psi);
+LB=(xB-xA)/sin(psi);
 
-wid=43.4;
-thi=5;
-
-E=0.0094;
+wid=28;
+thi=0.2;
+E=197;
 
 
 constraint_ratio=[];
@@ -55,16 +54,30 @@ Lcon3=31.03;
 Lcon4=26.37;
 Lcon5=21.62;
 Lcon6=16.6;
-constraint_ratio=[Lcon1,15.54/LA,16.71/LB;
-                  Lcon2,30.54/LA,34.22/LB;
-                  Lcon3,45.54/LA,50.71/LB;
-                  Lcon4,60.54/LA,66.18/LB;
-                  Lcon5,75.54/LA,80.6/LB;
-                  Lcon6,90.54/LA,93.87/LB];
+
+La_1=27;
+La_2=54;
+La_3=81;
+La_4=108;
+
+Lb_1=45.67;
+Lb_2=78.69;
+Lb_3=107.5;
+Lb_4=132.27;
+
+Lcon1=sqrt((LA-La_1)^2+(LB-Lb_1)^2-2*(LA-La_1)*(LB-Lb_1)*cos(psi));
+Lcon2=sqrt((LA-La_2)^2+(LB-Lb_2)^2-2*(LA-La_2)*(LB-Lb_2)*cos(psi));
+Lcon3=sqrt((LA-La_3)^2+(LB-Lb_3)^2-2*(LA-La_3)*(LB-Lb_3)*cos(psi));
+Lcon4=sqrt((LA-La_4)^2+(LB-Lb_4)^2-2*(LA-La_4)*(LB-Lb_4)*cos(psi));
+
+constraint_ratio=[Lcon1,La_1/LA,Lb_1/LB;
+                  Lcon2,La_2/LA,Lb_2/LB;
+                  Lcon3,La_3/LA,Lb_3/LB;
+                  Lcon4,La_4/LA,Lb_4/LB];
 
 
 A_force_ratio=[];
-A_force_ratio=[0.01,1/2];
+A_force_ratio=[0.00,1/2];
 
 
 B_force_ratio=[];
