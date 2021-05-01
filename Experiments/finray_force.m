@@ -439,7 +439,7 @@ classdef finray_force < handle
             end
             
             
-            scale=5;
+            scale=0.01;
             % 画出A受力的位置
             if obj.A_force_number ==0
                 
