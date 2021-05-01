@@ -48,12 +48,6 @@ E=197;
 
 
 constraint_ratio=[];
-Lcon1=40.76;
-Lcon2=35.78;
-Lcon3=31.03;
-Lcon4=26.37;
-Lcon5=21.62;
-Lcon6=16.6;
 
 La_1=27;
 La_2=54;
