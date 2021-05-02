@@ -122,14 +122,14 @@ Rod=planar_nR_flex(E,L0,wid,thi,n,[0;0;0]);
 
 
 % 第1张照片对应的参数
-contact_degree=120;
-pulley=[0.3*L0;0.3*L0;contact_degree/180*pi];
-
+contact_degree=110;
+pulley=[55e-3;65e-3;contact_degree/180*pi];
+pos_end=[175e-3;145e-3;pi/3];
 
 % 第2张照片对应的参数
 % contact_degree=0;
-% pulley=[0.3*L0;0.5*L0;contact_degree/180*pi];
-
+% pulley=[65e-3;100e-3;contact_degree/180*pi];
+% pos_end=[150e-3;150e-3;pi/2];
 
 options = optimoptions('fsolve','SpecifyObjectiveGradient',true,'CheckGradient',false);
 
@@ -146,7 +146,6 @@ Rod.plot_all;
 
 % 求解第2段
 
-pos_end=[0.6*L0;0.6*L0;pi/2];
 
 % 计算pos_end相对于pully的坐标
 
@@ -157,7 +156,7 @@ phi_pulley=pos_end(3)-pulley(3);
 pos_end_pulley=[r_pulley;phi_pulley];
 
 n2=50;
-R2=planar_nR(E,L0,wid,thi,n2,pos_end_pulley);
+R2=planar_nR(E,L0-x_solve(end-2),wid,thi,n2,pos_end_pulley);
 
 X0=zeros(n2+3,1);
 

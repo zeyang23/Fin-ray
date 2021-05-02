@@ -53,7 +53,7 @@ phi_pulley=pos_end(3)-pulley(3);
 pos_end_pulley=[r_pulley;phi_pulley];
 
 n2=50;
-R2=planar_nR(E,L0,wid,thi,n2,pos_end_pulley);
+R2=planar_nR(E,L0-x_solve(end-2),wid,thi,n2,pos_end_pulley);
 
 X0=zeros(n2+3,1);
 
