@@ -28,14 +28,14 @@ volt1(:,2)=volt1(:,2)-init1;
 
 
 volt1(:,1) = 1./volt1(:,1)*38;
-plot(volt1(:,2),volt1(:,1),'or','linewidth',1);
+% plot(volt1(:,2),volt1(:,1),'or','linewidth',1);
 
 coff_1 = polyfit(volt1(:,2),volt1(:,1),1);
 
-hold on
-grid on
-y_1 = polyval(coff_1,volt1(:,2));
-plot(volt1(:,2),y_1,'--r','linewidth',1)
+% hold on
+% grid on
+% y_1 = polyval(coff_1,volt1(:,2));
+% plot(volt1(:,2),y_1,'--r','linewidth',1)
 
 
 %% 标定第II块弯曲传感器
@@ -60,24 +60,73 @@ volt2(:,2)=volt2(:,2)-init2;
 
 
 volt2(:,1) = 1./volt2(:,1)*38;
-plot(volt2(:,2),volt2(:,1),'og','linewidth',1);
+% plot(volt2(:,2),volt2(:,1),'og','linewidth',1);
 
 coff_2 = polyfit(volt2(:,2),volt2(:,1),1);
 
-hold on
-grid on
-y_2 = polyval(coff_2,volt2(:,2));
-plot(volt2(:,2),y_2,'--g','linewidth',1)
+% hold on
+% grid on
+% y_2 = polyval(coff_2,volt2(:,2));
+% plot(volt2(:,2),y_2,'--g','linewidth',1)
 
 %% 根据传感器示数，求出夹角
 
-U1_0=0;
-U2_0=0;
+% % 初始测试
+% % U1_0=2.01;
+% % U2_0=1.56;
+% % 第1组数据
+% U1=2.07;
+% U2=3.65-2.07;
+% % 第2组数据
+% U1=2.24;
+% U2=1.69;
 
 
-% 第1组数据
-U1=0;
-U2=0;
+% 连续抓取测试
+% U1_0=2.02;
+% U2_0=1.58;
+% % 第1组数据
+% U1=2.07;
+% U2=1.605;
+% % 第2组数据
+% U1=2.115;
+% U2=1.63;
+% % 第3组数据
+% U1=2.14;
+% U2=1.635;
+% % 第4组数据
+% U1=2.155;
+% U2=1.645;
+% % 第5组数据
+% U1=2.19;
+% U2=1.66;
+% % 第6组数据
+% U1=2.225;
+% U2=1.69;
+% % 第7组数据
+% U1=2.247;
+% U2=1.70;
+
+% 回程
+% % 第8组数据
+% U1=2.21;
+% U2=1.67;
+% % 第9组数据
+% U1=2.18;
+% U2=1.66;
+% % 第10组数据
+% U1=2.14;
+% U2=1.63;
+% % 第11组数据
+% U1=2.11;
+% U2=1.62;
+% % 第12组数据
+% U1=2.04;
+% U2=1.58;
+% % 第13组数据
+% U1=2.02;
+% U2=1.58;
+
 
 U1_delta=U1-U1_0;
 U2_delta=U2-U2_0;
@@ -212,8 +261,8 @@ sensor_length=38e-3;
 sensor_length_ratio=sensor_length/LB;
 
 % 传感器的中心位置
-sensor1_center_ratio=90e-3/LB;
-sensor2_center_ratio=135e-3/LB;
+sensor1_center_ratio=89.15e-3/LB;
+sensor2_center_ratio=131.25e-3/LB;
 
 
 p1=fix((sensor1_center_ratio-sensor_length_ratio/2)*nB);
@@ -664,6 +713,6 @@ function abs_pos=plot_sensor_pos(pos_all,alpha,pA)
         abs_pos(i,1)=pos_all(i,1)*cos(alpha)-pos_all(i,2)*sin(alpha)+xA;
         abs_pos(i,2)=pos_all(i,1)*sin(alpha)+pos_all(i,2)*cos(alpha)+yA;
     end
-    plot(abs_pos(:,1),abs_pos(:,2),'-o','MarkerSize',4);
+    plot(abs_pos(:,1),abs_pos(:,2),'-o','MarkerSize',6);
     axis equal
 end
