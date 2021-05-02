@@ -419,7 +419,7 @@ classdef finray < handle
                     PB(1)=pkb(1)*cos(obj.pB(3))-pkb(2)*sin(obj.pB(3))+obj.pB(1);
                     PB(2)=pkb(1)*sin(obj.pB(3))+pkb(2)*cos(obj.pB(3))+obj.pB(2);
 
-                    plot([PA(1) PB(1)],[PA(2) PB(2)])
+                    plot([PA(1) PB(1)],[PA(2) PB(2)],'LineWidth',3)
                 end
             end
             

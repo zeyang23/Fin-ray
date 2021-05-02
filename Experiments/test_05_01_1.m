@@ -65,6 +65,7 @@ x0=zeros(n+3,1);
 
 vid = VideoWriter('test_05_01_planar_rod_animation');
 writerObj.FrameRate = 30;
+vid.Quality=100;
 open(vid);
 
 for i=1:N

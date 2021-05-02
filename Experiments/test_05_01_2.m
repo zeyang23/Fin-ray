@@ -100,6 +100,8 @@ x0=zeros(nA+nB+3+2*Finray1.constraint_number,1);
 
 vid = VideoWriter('test_05_01_finray_point_load_animation');
 writerObj.FrameRate = 60;
+vid.Quality=100;
+
 open(vid);
 
 
@@ -191,6 +193,8 @@ X_series_lsq=zeros(length(delta_series),3);
 
 vid = VideoWriter('test_05_01_finray_contact_animation');
 writerObj.FrameRate = 60;
+vid.Quality=100;
+
 open(vid);
 
 for i=1:length(delta_series)
@@ -208,7 +212,7 @@ for i=1:length(delta_series)
     
     % 画出求解结果
     
-    rectangle('Position',[center_x-radius,center_y-radius,2*radius,2*radius],'Curvature',[1,1],'linewidth',1,'edgecolor','r')
+    rectangle('Position',[center_x-radius,center_y-radius,2*radius,2*radius],'Curvature',[1,1],'linewidth',2,'edgecolor','r')
     axis equal;
     hold on
 
