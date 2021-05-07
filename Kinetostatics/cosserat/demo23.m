@@ -1,6 +1,7 @@
 % 有4根刚性支撑的Fin-ray
 
-% 样条线载荷
+% 三角函数线载荷
+% 迭代求解
 
 
 %% Cosserat Model shooting method
@@ -82,8 +83,11 @@ lambdaB4=Lb_4;
 lambda1=0.3*LA;
 lambda2=0.6*LA;
 
+press_s=0;
+press_e=240;
 
-press=60*[0.5,1,0.5];
+press_series=linspace(press_s,press_e,121);
+
 
 
 problem_info=struct();
@@ -104,21 +108,42 @@ problem_info.lambdaB4=lambdaB4;
 
 problem_info.lambda1=lambda1;
 problem_info.lambda2=lambda2;
-problem_info.press=press;
-
-f=@(x) check_balance(x,problem_info,psi,pA,pB,LA,LB,EA,EB,IA,IB);
 
 
 x0=zeros(17,1);
+x_series=[];
 
-options_A = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt');
-options_B = optimoptions('fsolve','Display','off','Algorithm','trust-region');
-options_C = optimoptions('fsolve','Display','off','Algorithm','trust-region-dogleg');
-[x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options_C);
-% [x_cosserat,resnorm,residual,exitflag_cosserat,output_cosserat] = lsqnonlin(f,x0);
+res=[];
+
+for i=1:length(press_series)
+    
+    problem_info.press=press_series(i);
+
+    f=@(x) check_balance(x,problem_info,psi,pA,pB,LA,LB,EA,EB,IA,IB);
+
+
+    options_A = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt');
+    options_B = optimoptions('fsolve','Display','off','Algorithm','trust-region');
+    options_C = optimoptions('fsolve','Display','off','Algorithm','trust-region-dogleg');
+    [x_series(:,i),fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0,options_B);
+    
+    res(i)=norm(fval_cosserat);
+    
+    if exitflag_cosserat<=0
+        error('failed')
+    else
+        disp(i)
+    end
+    
+    x0=x_series(:,i);
+end
 
 
 %% 验证求解结果
+x_cosserat=x_series(:,end);
+press=press_e;
+
+
 na_0=x_cosserat(1:2);
 ma_0=x_cosserat(3);
 
@@ -418,10 +443,7 @@ end
 function fs=f_press(s,y,lambda1,lambda2,press)
     theta=y(3);
     if(s>=lambda1) && (s<=lambda2)
-        s_points=linspace(lambda1,lambda2,length(press)+2);
-        f_points=[0,press,0];
-        
-        f=Spline_natural(s_points,f_points,s);
+        f=press*sin((s-lambda1)/(lambda2-lambda1)*pi);
         fs=[f*sin(theta);-f*cos(theta)];
     else
         fs=[0;0];
