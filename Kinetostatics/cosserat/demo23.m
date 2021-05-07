@@ -80,13 +80,13 @@ lambdaB4=Lb_4;
 
 
 
-lambda1=0.3*LA;
-lambda2=0.6*LA;
+lambda1=0.4*LA;
+lambda2=0.45*LA;
 
-press_s=0;
-press_e=240;
+press_s=200;
+press_e=1000;
 
-press_series=linspace(press_s,press_e,121);
+press_series=linspace(press_s,press_e,301);
 
 
 
