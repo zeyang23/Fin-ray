@@ -4,6 +4,13 @@
 % 21-05-07
 % 鲁棒性很差
 
+% 21-05-09
+% 原先lambda1=0.4*LA;lambda2=0.45*LA;press=1000; 求解效果很差
+% 现在lambda1=0.4*LA;lambda2=0.6*LA;press=200; 在给定x_init时效果还行
+
+% 观察结果：只要拿一个弯度适中的解作为初值，就能算出来大变形的结果！！
+% 不要拿着0外力时的平的状态作为初值
+
 
 %% 根据曲率反解形状
 
@@ -12,7 +19,15 @@ clc
 
 load('K1.mat')
 
-load('x_cosserat.mat')
+load('problem_condition.mat')
+
+load('x_init.mat')
+
+
+press_0=problem_condition.press;
+
+lambda1=problem_condition.lambda1;
+lambda2=problem_condition.lambda2;
 
 
 wid=28e-3;
@@ -87,12 +102,6 @@ lambdaB4=Lb_4;
 
 
 
-lambda1=0.4*LA;
-lambda2=0.45*LA;
-
-
-press=1000;
-
 
 lambda_K=0.5*LB;
 
@@ -124,8 +133,14 @@ g=@(x) check_shape(x,problem_info_shape,psi,pA,pB,LA,LB,EA,EB,IA,IB);
 
 
 x0_shape=zeros(18,1);
-x0_shape(1:17)=x_cosserat;
-x0_shape(18)=press;
+
+x0_shape(1:17)=problem_condition.x_real;
+% x0_shape(1:17)=x_init;
+
+x0_shape(18)=press_0;
+
+
+
 
 options_A = optimoptions('fsolve','Algorithm','levenberg-marquardt');
 options_B = optimoptions('fsolve','Algorithm','trust-region');
@@ -154,6 +169,8 @@ gamma3=x_shape(15);
 
 fcon4=x_shape(16);
 gamma4=x_shape(17);
+
+press=x_shape(18);
 
 
 options_a=odeset('MaxStep',1e-2);
@@ -394,7 +411,6 @@ function res=check_shape(x,problem_info,psi,pA,pB,LA,LB,EA,EB,IA,IB)
     
     res(18)=K1_now-K1;
 end
-
 
 function ydot=get_ydot_A(s,y,lambda1,lambda2,press,L,E,I)
     ydot=zeros(size(y));

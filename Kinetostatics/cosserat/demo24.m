@@ -6,7 +6,13 @@
 clear
 clc
 
-load('x_cosserat.mat')
+load('problem_condition.mat')
+
+x_cosserat=problem_condition.x_real;
+press=problem_condition.press;
+lambda1=problem_condition.lambda1;
+lambda2=problem_condition.lambda2;
+
 
 
 wid=28e-3;
@@ -80,12 +86,6 @@ lambdaA4=La_4;
 lambdaB4=Lb_4;
 
 
-
-lambda1=0.4*LA;
-lambda2=0.45*LA;
-
-
-press=1000;
 
 
 na_0=x_cosserat(1:2);

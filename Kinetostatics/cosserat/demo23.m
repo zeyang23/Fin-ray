@@ -143,6 +143,16 @@ end
 x_cosserat=x_series(:,end);
 press=press_e;
 
+% 保存求解结果
+problem_condition=struct;
+
+x_real=x_cosserat;
+problem_condition.x_real=x_real;
+problem_condition.press=press;
+problem_condition.lambda1=lambda1;
+problem_condition.lambda2=lambda2;
+
+save('problem_condition.mat','problem_condition')
 
 na_0=x_cosserat(1:2);
 ma_0=x_cosserat(3);
