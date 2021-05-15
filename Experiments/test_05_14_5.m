@@ -110,11 +110,11 @@ for i=1:length(pdes_series)
     
     span = [0 L0];
     y0 = [0;0;0;x_cosserat(1:3)];
-    options3=odeset('MaxStep',1e-2);
+    options3=odeset('MaxStep',1e-3);
     [s,Y] = ode45(@(s,y) get_ydot(s,y,L0,E,Iz,x_cosserat(4:6)), span, y0,options3);
 
     hold on
-    plot(Y(:,1),Y(:,2),'r')
+    plot(Y(:,1),Y(:,2))
 
     x0_cosserat=x_cosserat;
 end
@@ -135,6 +135,8 @@ end
 
 DELTA_pad=F_sensor_transfered-F_theory_pad;
 DELTA_cosserat=F_sensor_transfered-F_theory_cosserat;
+
+DELTA_pad_cosserat=F_theory_pad-F_theory_cosserat;
 
 
 function [r,J]=cal_balance_pad(x,Rod)
