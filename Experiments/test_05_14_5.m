@@ -55,6 +55,8 @@ x0_pad=zeros(n+3,1);
 
 F_theory_pad=zeros(4,length(pdes_series));
 
+Fe_series=[];
+
 
 for i=1:length(pdes_series)
     pdes=pdes_series(:,i);
@@ -75,6 +77,8 @@ for i=1:length(pdes_series)
     
     Rod.theta=x_pad(1:Rod.n_seg);
     Rod.F=x_pad(Rod.n_seg+1:Rod.n_seg+3);
+    
+    Fe_series(:,i)=Rod.F;
 
     Rod.update;
     Rod.plot_all;
@@ -85,14 +89,19 @@ end
 
 F_theory_cosserat=zeros(4,length(pdes_series));
 
-% x0_cosserat=zeros(6,1);
-x0_cosserat=-ones(6,1);
+% cosserat的多解现象很严重，初值是个玄学
+x0_cosserat=zeros(6,1);
+x0_cosserat(1:3)=Fe_series(:,end);
+x0_cosserat(4:6)=Fe_series(:,end);
 
 for i=1:length(pdes_series)
     pdes=pdes_series(:,length(pdes_series)+1-i);
     f=@(x) check_balance_cosserat(x,L0,E,Iz,pdes);
+    
+%     x0_cosserat(1:3)=-Fe_series(:,length(pdes_series)+1-i)-[0;0;transpose(pdes(1:2))*[0 1;-1 0]*Fe_series(1:2,length(pdes_series)+1-i)];
+%     x0_cosserat(4:6)=Fe_series(:,length(pdes_series)+1-i);
 
-    options_a = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt');
+    options_a = optimoptions('fsolve','Display','off','Algorithm','trust-region');
     [x_cosserat,fval_cosserat,exitflag_cosserat,output_cosserat]=fsolve(f,x0_cosserat,options_a);
     
     F_theory_cosserat(1:2,length(pdes_series)+1-i)=x_cosserat(4:5);
