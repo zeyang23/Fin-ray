@@ -35,7 +35,7 @@ end
 
 
 
-N_total=16;
+N_total=31;
 delta_series=linspace(0,delta_total,N_total);
 
 
@@ -63,8 +63,8 @@ for i=1:N_total
     residual_series(:,i)=residual;
     
     X0=X;
-    X0(1)=X0(3)-0.1;
-    X0(5)=X0(3)+0.1;
+    X0(1)=X0(3)-0.2;
+    X0(5)=X0(3)+0.2;
 
 
     %% 验证结果
