@@ -19,7 +19,7 @@ ub = [1,10];
 X0 = [0.45,12];
 
 
-delta=55e-3;
+delta=57e-3;
 
 f=@(tangent_var) myfunc(tangent_var,delta,center_x,center_y,radius);
 
@@ -156,7 +156,7 @@ norm_F=norm([Fx;Fy]);
 disp(Fx)
 disp(Fy)
 disp(PHI_degree)
-disp(norm(norm_F))
+disp(norm_F)
 
 
 

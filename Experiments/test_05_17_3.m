@@ -1,4 +1,4 @@
-% 两点接触
+% 多点接触，非均匀间隔
 
 
 %%
@@ -14,9 +14,26 @@ delta=55e-3;
 
 f=@(tangent_var) myfunc(tangent_var,delta,center_x,center_y,radius);
 
-lb = [0,0,0,0];
-ub = [1,10,1,10];
-X0 = [0.4,1,0.6,1];
+% 相切点的个数
+N_tan=3;
+
+
+lb=zeros(2*N_tan,1);
+
+ub=zeros(2*N_tan,1);
+for i=1:N_tan
+    ub(2*i-1)=1;
+    ub(2*i)=10;
+end
+
+ratio_series=linspace(0.4,0.55,N_tan);
+
+X0=zeros(2*N_tan,1);
+for i=1:N_tan
+    X0(2*i-1)=ratio_series(i);
+    X0(2*i)=6;
+end
+
 
 [X,resnorm,residual,exitflag_lsq,output_lsq] = lsqnonlin(f,X0,lb,ub);
 % [X,fval_fsolve,exitflag_fsolve,output_fsolve]=fsolve(f,X0);
@@ -28,11 +45,6 @@ rectangle('Position',[center_x-radius,center_y-radius,2*radius,2*radius],'Curvat
 axis equal;
 hold on
 
-tangent_ratio1=X(1);
-tangent_F1=X(2);
-
-tangent_ratio2=X(3);
-tangent_F2=X(4);
 
 xA=0-delta;
 yA=0;
@@ -84,9 +96,15 @@ Lcon4=sqrt((LA-La_4)^2+(LB-Lb_4)^2-2*(LA-La_4)*(LB-Lb_4)*cos(psi));
 %                   Lcon3,La_3/LA,Lb_3/LB;
 %                   Lcon4,La_4/LA,Lb_4/LB];
 
-A_force_ratio=[];
-A_force_ratio=[tangent_F1,tangent_ratio1;
-               tangent_F2,tangent_ratio2];
+tangent_ratio=zeros(N_tan,1);
+tangent_F=zeros(N_tan,1);
+    
+for i=1:N_tan
+    tangent_ratio(i)=X(2*i-1);
+    tangent_F(i)=X(2*i);
+end
+
+A_force_ratio=[tangent_F,tangent_ratio];
 
 
 B_force_ratio=[];
@@ -140,6 +158,25 @@ axis equal
 axis([-80e-3 100e-3 0 160e-3]);
 
 
+% 求出外力的合力
+Fx=0;
+Fy=0;
+for i=1:N_tan
+    Finray1.A_force_array(i).cal_pe;
+    pka=Finray1.A_force_array(i).pe;
+
+    PHI=pka(3)+Finray1.pA(3);
+    Fx=Fx+tangent_F(i)*sin(PHI);
+    Fy=Fy-tangent_F(i)*cos(PHI);
+end
+
+norm_F=norm([Fx;Fy]);
+clc
+disp(Fx)
+disp(Fy)
+disp(norm_F)
+
+
 % 尝试在无梯度的情况下直接求解Finray与圆柱相切的问题
 
 % 给定圆心位置x y 圆柱半径r
@@ -150,12 +187,17 @@ axis([-80e-3 100e-3 0 160e-3]);
 
 function r=myfunc(tangent_var,delta,center_x,center_y,radius)
 
-    tangent_ratio1=tangent_var(1);
-    tangent_F1=tangent_var(2);
+    N_tan=length(tangent_var)/2;
     
-    tangent_ratio2=tangent_var(3);
-    tangent_F2=tangent_var(4);
+    tangent_ratio=zeros(N_tan,1);
+    tangent_F=zeros(N_tan,1);
+    
+    for i=1:N_tan
+        tangent_ratio(i)=tangent_var(2*i-1);
+        tangent_F(i)=tangent_var(2*i);
+    end
 
+    
     xA=0-delta;
     yA=0;
 
@@ -206,9 +248,8 @@ function r=myfunc(tangent_var,delta,center_x,center_y,radius)
 %                       Lcon3,La_3/LA,Lb_3/LB;
 %                       Lcon4,La_4/LA,Lb_4/LB];
 
-    A_force_ratio=[];
-    A_force_ratio=[tangent_F1,tangent_ratio1;
-                   tangent_F2,tangent_ratio2];
+
+    A_force_ratio=[tangent_F,tangent_ratio];
 
 
     B_force_ratio=[];
@@ -261,39 +302,25 @@ function r=myfunc(tangent_var,delta,center_x,center_y,radius)
     % 拿到切点的x y phi
     
     thetaA=x_solve(1:Finray1.nA);
-    Finray1.A_force_array(1).theta=thetaA(1:Finray1.A_force_index(1,2));
-    Finray1.A_force_array(1).cal_pe;
+    
+    r=zeros(2*N_tan,1);
+    
+    for i=1:N_tan
+        Finray1.A_force_array(i).theta=thetaA(1:Finray1.A_force_index(i,2));
+        Finray1.A_force_array(i).cal_pe;
 
-    pka=Finray1.A_force_array(1).pe;
-    L_tail=Finray1.A_force_ratio(1,2)*Finray1.LA-(Finray1.A_force_array(1).Ltotal-Finray1.RodA.seg_length);
-    pka(1)=pka(1)-Finray1.A_force_array(1).seg_length*cos(sum(Finray1.A_force_array(1).theta))/2+L_tail*cos(sum(Finray1.A_force_array(1).theta));
-    pka(2)=pka(2)-Finray1.A_force_array(1).seg_length*sin(sum(Finray1.A_force_array(1).theta))/2+L_tail*sin(sum(Finray1.A_force_array(1).theta));
-    
-    PA(1)=pka(1)*cos(Finray1.pA(3))-pka(2)*sin(Finray1.pA(3))+Finray1.pA(1);
-    PA(2)=pka(1)*sin(Finray1.pA(3))+pka(2)*cos(Finray1.pA(3))+Finray1.pA(2);
-    PA(3)=pka(3)+Finray1.pA(3);
-    
-    
-    
-    Finray1.A_force_array(2).theta=thetaA(1:Finray1.A_force_index(2,2));
-    Finray1.A_force_array(2).cal_pe;
+        pka=Finray1.A_force_array(i).pe;
+        L_tail=Finray1.A_force_ratio(i,2)*Finray1.LA-(Finray1.A_force_array(i).Ltotal-Finray1.A_force_array(i).seg_length/2);
+        pka(1)=pka(1)-Finray1.A_force_array(i).seg_length*cos(sum(Finray1.A_force_array(i).theta))/2+L_tail*cos(sum(Finray1.A_force_array(i).theta));
+        pka(2)=pka(2)-Finray1.A_force_array(i).seg_length*sin(sum(Finray1.A_force_array(i).theta))/2+L_tail*sin(sum(Finray1.A_force_array(i).theta));
 
-    pka2=Finray1.A_force_array(2).pe;
-    L_tail=Finray1.A_force_ratio(2,2)*Finray1.LA-(Finray1.A_force_array(2).Ltotal-Finray1.RodA.seg_length);
-    pka2(1)=pka2(1)-Finray1.A_force_array(2).seg_length*cos(sum(Finray1.A_force_array(2).theta))/2+L_tail*cos(sum(Finray1.A_force_array(2).theta));
-    pka2(2)=pka2(2)-Finray1.A_force_array(2).seg_length*sin(sum(Finray1.A_force_array(2).theta))/2+L_tail*sin(sum(Finray1.A_force_array(2).theta));
-    
-    PA2(1)=pka2(1)*cos(Finray1.pA(3))-pka2(2)*sin(Finray1.pA(3))+Finray1.pA(1);
-    PA2(2)=pka2(1)*sin(Finray1.pA(3))+pka2(2)*cos(Finray1.pA(3))+Finray1.pA(2);
-    PA2(3)=pka2(3)+Finray1.pA(3);
-    
-    
-    
-    r=zeros(4,1);
-    r(1)=center_x+radius*sin(PA(3))-PA(1);
-    r(2)=center_y-radius*cos(PA(3))-PA(2);
-    r(3)=center_x+radius*sin(PA2(3))-PA2(1);
-    r(4)=center_y-radius*cos(PA2(3))-PA2(2);
+        PA(1)=pka(1)*cos(Finray1.pA(3))-pka(2)*sin(Finray1.pA(3))+Finray1.pA(1);
+        PA(2)=pka(1)*sin(Finray1.pA(3))+pka(2)*cos(Finray1.pA(3))+Finray1.pA(2);
+        PA(3)=pka(3)+Finray1.pA(3);
+        
+        r(2*i-1)=center_x+radius*sin(PA(3))-PA(1);
+        r(2*i)=center_y-radius*cos(PA(3))-PA(2);
+    end
     
     
     
