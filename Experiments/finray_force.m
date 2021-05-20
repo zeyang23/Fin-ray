@@ -478,5 +478,50 @@ classdef finray_force < handle
                 end
             end
         end
+        
+        
+        function [A_abs_pos,B_abs_pos]=plot_state_sr(obj,x)
+            % sr: shape reconstruction
+            
+            % 画出A和B的形状
+            thetaA=x(1:obj.nA);
+            thetaB=x(obj.nA+1:obj.nA+obj.nB);
+            
+            obj.RodA.theta=thetaA;
+            obj.RodA.cal_pe;
+            obj.RodA.cal_posall;
+            A_abs_pos=plot_abs_pos(obj.RodA.pos_all,obj.pA(3),[obj.pA(1),obj.pA(2)]);
+            hold on
+            
+            obj.RodB.theta=thetaB;
+            obj.RodB.cal_pe;
+            obj.RodB.cal_posall;
+            B_abs_pos=plot_abs_pos(obj.RodB.pos_all,obj.pB(3),[obj.pB(1),obj.pB(2)]);
+            
+            % 画出刚性约束
+            if obj.constraint_number==0
+                
+            else
+                for i=1:obj.constraint_number
+                    obj.A_constraint_array(i).theta=thetaA(1:obj.constraint_index(i,2));
+                    obj.A_constraint_array(i).cal_pe;
+                    
+                    obj.B_constraint_array(i).theta=thetaB(1:obj.constraint_index(i,3));
+                    obj.B_constraint_array(i).cal_pe;
+                    
+                    pka=obj.A_constraint_array(i).pe;
+                    PA(1)=pka(1)*cos(obj.pA(3))-pka(2)*sin(obj.pA(3))+obj.pA(1);
+                    PA(2)=pka(1)*sin(obj.pA(3))+pka(2)*cos(obj.pA(3))+obj.pA(2);
+
+                    pkb=obj.B_constraint_array(i).pe;
+                    PB(1)=pkb(1)*cos(obj.pB(3))-pkb(2)*sin(obj.pB(3))+obj.pB(1);
+                    PB(2)=pkb(1)*sin(obj.pB(3))+pkb(2)*cos(obj.pB(3))+obj.pB(2);
+
+                    plot([PA(1) PB(1)],[PA(2) PB(2)],'LineWidth',3)
+                end
+            end
+            
+            
+        end
     end
 end
