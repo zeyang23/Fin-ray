@@ -1,4 +1,4 @@
-function [tangent_ratio,A_abs_pos,B_abs_pos,sensor1_abs_pos,sensor2_abs_pos]=shape_reconstruction(U1,U2)
+function [X,A_abs_pos,B_abs_pos,sensor1_abs_pos,sensor2_abs_pos]=shape_reconstruction(X0,U1,U2)
 
     % 根据传感器示数，求出夹角
 
@@ -22,7 +22,7 @@ function [tangent_ratio,A_abs_pos,B_abs_pos,sensor1_abs_pos,sensor2_abs_pos]=sha
 
     lb = [0,0];
     ub = [1,8];
-    X0 = [0.5,1];
+%     X0 = [0.5,0];
     [X,resnorm,residual,exitflag_lsq,output_lsq] = lsqnonlin(f,X0,lb,ub);
     % [X,fval_fsolve,exitflag_fsolve,output_fsolve]=fsolve(f,X0);
 
