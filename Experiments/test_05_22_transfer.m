@@ -1,0 +1,51 @@
+% clear
+clc
+
+Fsensor_series=[];
+
+% r=30e-3
+
+% 第1组数据
+% Fsensor_series(:,1)=[-0.14;0.48];
+% Fsensor_series(:,2)=[-0.20;1.25];
+% Fsensor_series(:,3)=[-0.20;2.10];
+% Fsensor_series(:,4)=[-0.90;2.93];
+% Fsensor_series(:,5)=[-1.68;3.84];
+% Fsensor_series(:,6)=[-2.55;4.96];
+% Fsensor_series(:,7)=[-3.60;6.27];
+% Fsensor_series(:,6)=[-4.44;7.80];
+% Fsensor_series(:,6)=[-6.40;9.70];
+% Fsensor_series(:,6)=[-7.94;11.96];
+
+
+% r=20e-3;
+% 第2组数据
+Fsensor_series(:,1)=[-0.18;0.82];
+Fsensor_series(:,2)=[-0.26;1.61];
+Fsensor_series(:,3)=[-0.66;2.42];
+Fsensor_series(:,4)=[-1.25;3.28];
+Fsensor_series(:,5)=[-2.38;4.27];
+Fsensor_series(:,6)=[-3.42;5.50];
+Fsensor_series(:,7)=[-4.19;6.91];
+Fsensor_series(:,6)=[-5.22;8.62];
+Fsensor_series(:,6)=[-6.41;10.67];
+Fsensor_series(:,6)=[-6.00;12.40];
+
+
+
+alpha=69.8/180*pi;
+
+
+
+
+F_trans_series=[];
+for i=1:size(Fsensor_series,2)
+    Fx=Fsensor_series(1,i);
+    Fy=Fsensor_series(2,i);
+    
+    Fx_trans=-(Fx*cos(alpha)-Fy*sin(alpha));
+    Fy_trans=-(Fx*sin(alpha)+Fy*cos(alpha));
+    F_sensor_norm=norm([Fx;Fy]);
+    
+    F_trans_series(:,i)=[Fx_trans;Fy_trans;F_sensor_norm];
+end
