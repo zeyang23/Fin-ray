@@ -1,4 +1,4 @@
-function [X,A_abs_pos,B_abs_pos,sensor1_abs_pos,sensor2_abs_pos]=shape_reconstruction(X0,U1,U2)
+function [X,A_abs_pos,B_abs_pos,sensor1_abs_pos,sensor2_abs_pos,contact_abs_pos,rigid_pos_left,rigid_pos_right]=shape_reconstruction(X0,U1,U2)
 
     % 根据传感器示数，求出夹角
 
@@ -157,6 +157,45 @@ function [X,A_abs_pos,B_abs_pos,sensor1_abs_pos,sensor2_abs_pos]=shape_reconstru
     
     sensor1_abs_pos=plot_sensor_pos(sensor1_pos,beta,[xB,yB]);
     sensor2_abs_pos=plot_sensor_pos(sensor2_pos,beta,[xB,yB]);
+    
+    
+    
+    contact_center_length=X(1)*LA;
+    contact_length=0.3*LA;
+    
+    p_contact=fix((contact_center_length-contact_length/2-LA/nA/2)/(LA/nA))+1;
+    q_contact=fix((contact_center_length+contact_length/2-LA/nA/2)/(LA/nA))+1;
+    
+    
+    Finray_solve.RodA.cal_posall;
+    contact_pos=Finray_solve.RodA.pos_all(1+p_contact:1+q_contact,:);
+    
+    contact_abs_pos=plot_sensor_pos(contact_pos,alpha,[xA,yA]);
+    
+    
+    rigid_pos_left=[];
+    rigid_pos_right=[];
+    
+    for i=1:Finray_solve.constraint_number
+        Finray_solve.A_constraint_array(i).theta=Finray_solve.RodA.theta(1:Finray_solve.constraint_index(i,2));
+        Finray_solve.A_constraint_array(i).cal_pe;
+
+        Finray_solve.B_constraint_array(i).theta=Finray_solve.RodB.theta(1:Finray_solve.constraint_index(i,3));
+        Finray_solve.B_constraint_array(i).cal_pe;
+
+        pka=Finray_solve.A_constraint_array(i).pe;
+        PA(1)=pka(1)*cos(Finray_solve.pA(3))-pka(2)*sin(Finray_solve.pA(3))+Finray_solve.pA(1);
+        PA(2)=pka(1)*sin(Finray_solve.pA(3))+pka(2)*cos(Finray_solve.pA(3))+Finray_solve.pA(2);
+
+        pkb=Finray_solve.B_constraint_array(i).pe;
+        PB(1)=pkb(1)*cos(Finray_solve.pB(3))-pkb(2)*sin(Finray_solve.pB(3))+Finray_solve.pB(1);
+        PB(2)=pkb(1)*sin(Finray_solve.pB(3))+pkb(2)*cos(Finray_solve.pB(3))+Finray_solve.pB(2);
+
+        rigid_pos_left(i,:)=[PA(1) PA(2)];
+        rigid_pos_right(i,:)=[PB(1) PB(2)];
+
+    end
+    
 end
 
 
