@@ -201,6 +201,12 @@ sensor2_pos=Finray_solve.RodB.pos_all(1+p2:1+q2,:);
 plot_sensor_pos(sensor1_pos,beta,[xB,yB]);
 plot_sensor_pos(sensor2_pos,beta,[xB,yB]);
 
+axis equal
+axis([-80e-3 100e-3 0 160e-3]);
+
+xlabel('x/m')
+ylabel('y/m')
+
 function r=myfunc_1(tangent_var,Delta1,Delta2)
 
     tangent_ratio=tangent_var(1);

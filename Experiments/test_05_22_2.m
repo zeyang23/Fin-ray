@@ -65,7 +65,7 @@ f=@(tangent_var) myfunc_1(tangent_var,DeltaA,DeltaB);
 
 lb = [0,0];
 ub = [1,8];
-X0 = [0.5,0.5];
+X0 = [0.5,1];
 [X,resnorm,residual,exitflag_lsq,output_lsq] = lsqnonlin(f,X0,lb,ub);
 % [X,fval_fsolve,exitflag_fsolve,output_fsolve]=fsolve(f,X0);
 
@@ -200,6 +200,13 @@ sensor2_pos=Finray_solve.RodB.pos_all(1+p2:1+q2,:);
 
 plot_sensor_pos(sensor1_pos,beta,[xB,yB]);
 plot_sensor_pos(sensor2_pos,beta,[xB,yB]);
+
+
+axis equal
+axis([-80e-3 100e-3 0 160e-3]);
+
+xlabel('x/m')
+ylabel('y/m')
 
 function r=myfunc_1(tangent_var,Delta1,Delta2)
 
