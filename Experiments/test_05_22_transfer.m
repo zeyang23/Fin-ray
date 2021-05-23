@@ -13,9 +13,9 @@ Fsensor_series=[];
 % Fsensor_series(:,5)=[-1.68;3.84];
 % Fsensor_series(:,6)=[-2.55;4.96];
 % Fsensor_series(:,7)=[-3.60;6.27];
-% Fsensor_series(:,6)=[-4.44;7.80];
-% Fsensor_series(:,6)=[-6.40;9.70];
-% Fsensor_series(:,6)=[-7.94;11.96];
+% Fsensor_series(:,8)=[-4.44;7.80];
+% Fsensor_series(:,9)=[-6.40;9.70];
+% Fsensor_series(:,10)=[-7.94;11.96];
 
 
 % r=20e-3;
@@ -27,9 +27,9 @@ Fsensor_series(:,4)=[-1.25;3.28];
 Fsensor_series(:,5)=[-2.38;4.27];
 Fsensor_series(:,6)=[-3.42;5.50];
 Fsensor_series(:,7)=[-4.19;6.91];
-Fsensor_series(:,6)=[-5.22;8.62];
-Fsensor_series(:,6)=[-6.41;10.67];
-Fsensor_series(:,6)=[-6.00;12.40];
+Fsensor_series(:,8)=[-5.22;8.62];
+Fsensor_series(:,9)=[-6.41;10.67];
+Fsensor_series(:,10)=[-6.00;12.40];
 
 
 
