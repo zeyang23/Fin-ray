@@ -5,7 +5,6 @@ Fsensor_series=[];
 
 % r=30e-3
 
-% 第1组数据
 % Fsensor_series(:,1)=[-0.14;0.48];
 % Fsensor_series(:,2)=[-0.20;1.25];
 % Fsensor_series(:,3)=[-0.20;2.10];
@@ -17,25 +16,38 @@ Fsensor_series=[];
 % Fsensor_series(:,9)=[-6.40;9.70];
 % Fsensor_series(:,10)=[-7.94;11.96];
 
+% alpha=69.8/180*pi;
 
-% r=20e-3;
-% 第2组数据
-Fsensor_series(:,1)=[-0.18;0.82];
-Fsensor_series(:,2)=[-0.26;1.61];
-Fsensor_series(:,3)=[-0.66;2.42];
-Fsensor_series(:,4)=[-1.25;3.28];
-Fsensor_series(:,5)=[-2.38;4.27];
-Fsensor_series(:,6)=[-3.42;5.50];
-Fsensor_series(:,7)=[-4.19;6.91];
-Fsensor_series(:,8)=[-5.22;8.62];
-Fsensor_series(:,9)=[-6.41;10.67];
-Fsensor_series(:,10)=[-6.00;12.40];
 
 
 
-alpha=69.8/180*pi;
+% r=20e-3;
+
+% Fsensor_series(:,1)=[-0.18;0.82];
+% Fsensor_series(:,2)=[-0.26;1.61];
+% Fsensor_series(:,3)=[-0.66;2.42];
+% Fsensor_series(:,4)=[-1.25;3.28];
+% Fsensor_series(:,5)=[-2.38;4.27];
+% Fsensor_series(:,6)=[-3.42;5.50];
+% Fsensor_series(:,7)=[-4.19;6.91];
+% Fsensor_series(:,8)=[-5.22;8.62];
+% Fsensor_series(:,9)=[-6.41;10.67];
+% Fsensor_series(:,10)=[-6.00;12.40];
+
+% alpha=69.8/180*pi;
 
 
+
+% a20b30
+% Fsensor_series(:,1)=[-0.67;-0.20];
+% Fsensor_series(:,2)=[-1.40;-0.59];
+% Fsensor_series(:,3)=[-2.31;-1.06];
+% Fsensor_series(:,4)=[-3.24;-2.05];
+% Fsensor_series(:,5)=[-4.45;-3.70];
+% Fsensor_series(:,6)=[-5.79;-4.85];
+% Fsensor_series(:,7)=[-7.58;-6.98];
+% Fsensor_series(:,8)=[-9.59;-8.84];
+% alpha=-20.2;
 
 
 F_trans_series=[];

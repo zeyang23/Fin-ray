@@ -2,13 +2,12 @@ function [X,A_abs_pos,B_abs_pos,sensor1_abs_pos,sensor2_abs_pos]=shape_reconstru
 
     % 根据传感器示数，求出夹角
 
-    coff_1=[0.975050370202311,0.036863545306252];
-    coff_2=[1.182251041188880,0.022962912791744];
+    coff_1=[1.186256198447459,0.056997358385406];
+    coff_2=[1.151462241145653,0.027617725599564];
 
 
-    U1_0=2.43;
-    U2_0=2.17;
-
+    U1_0=3.15-1.46;
+    U2_0=1.46;
 
     U1_delta=U1-U1_0;
     U2_delta=U2-U2_0;
@@ -21,7 +20,7 @@ function [X,A_abs_pos,B_abs_pos,sensor1_abs_pos,sensor2_abs_pos]=shape_reconstru
     f=@(tangent_var) myfunc_1(tangent_var,DeltaA,DeltaB);
 
     lb = [0,0];
-    ub = [1,8];
+    ub = [1,15];
 %     X0 = [0.5,0];
     [X,resnorm,residual,exitflag_lsq,output_lsq] = lsqnonlin(f,X0,lb,ub);
     % [X,fval_fsolve,exitflag_fsolve,output_fsolve]=fsolve(f,X0);
@@ -136,19 +135,18 @@ function [X,A_abs_pos,B_abs_pos,sensor1_abs_pos,sensor2_abs_pos]=shape_reconstru
 
 
     % 传感器的长度
-    sensor_length=38e-3;
-    sensor_length_ratio=sensor_length/LB;
+    sensor_length=36e-3;
 
     % 传感器的中心位置
-    sensor1_center_ratio=89.15e-3/LB;
-    sensor2_center_ratio=131.25e-3/LB;
+    sensor1_center=133.9e-3;
+    sensor2_center=93.1e-3;
 
 
-    p1=fix((sensor1_center_ratio-sensor_length_ratio/2)*nB);
-    q1=fix((sensor1_center_ratio+sensor_length_ratio/2)*nB);
+    p1=fix((sensor1_center-sensor_length/2-LB/nB/2)/(LB/nB))+1;
+    q1=fix((sensor1_center+sensor_length/2-LB/nB/2)/(LB/nB))+1;
 
-    p2=fix((sensor2_center_ratio-sensor_length_ratio/2)*nB);
-    q2=fix((sensor2_center_ratio+sensor_length_ratio/2)*nB);
+    p2=fix((sensor2_center-sensor_length/2-LB/nB/2)/(LB/nB))+1;
+    q2=fix((sensor2_center+sensor_length/2-LB/nB/2)/(LB/nB))+1;
 
 
 
@@ -269,19 +267,18 @@ function r=myfunc_1(tangent_var,Delta1,Delta2)
     
     
     % 传感器的长度
-    sensor_length=38e-3;
-    sensor_length_ratio=sensor_length/LB;
+    sensor_length=36e-3;
 
     % 传感器的中心位置
-    sensor1_center_ratio=90e-3/LB;
-    sensor2_center_ratio=135e-3/LB;
+    sensor1_center=133.9e-3;
+    sensor2_center=93.1e-3;
 
 
-    p1=fix((sensor1_center_ratio-sensor_length_ratio/2)*nB);
-    q1=fix((sensor1_center_ratio+sensor_length_ratio/2)*nB);
+    p1=fix((sensor1_center-sensor_length/2-LB/nB/2)/(LB/nB))+1;
+    q1=fix((sensor1_center+sensor_length/2-LB/nB/2)/(LB/nB))+1;
 
-    p2=fix((sensor2_center_ratio-sensor_length_ratio/2)*nB);
-    q2=fix((sensor2_center_ratio+sensor_length_ratio/2)*nB);
+    p2=fix((sensor2_center-sensor_length/2-LB/nB/2)/(LB/nB))+1;
+    q2=fix((sensor2_center+sensor_length/2-LB/nB/2)/(LB/nB))+1;
 
 
     Delta1_now=sum(FinrayA.RodB.theta(p1:q1));
@@ -309,6 +306,6 @@ function abs_pos=plot_sensor_pos(pos_all,alpha,pA)
         abs_pos(i,1)=pos_all(i,1)*cos(alpha)-pos_all(i,2)*sin(alpha)+xA;
         abs_pos(i,2)=pos_all(i,1)*sin(alpha)+pos_all(i,2)*cos(alpha)+yA;
     end
-    plot(abs_pos(:,1),abs_pos(:,2),'o','MarkerSize',4,'LineWidth',2);
-    axis equal
+%     plot(abs_pos(:,1),abs_pos(:,2),'o','MarkerSize',4,'LineWidth',2);
+%     axis equal
 end
