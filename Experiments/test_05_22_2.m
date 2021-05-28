@@ -208,6 +208,13 @@ axis([-80e-3 100e-3 0 160e-3]);
 xlabel('x/m')
 ylabel('y/m')
 
+rigid_abs_pos=Finray_solve.get_rigid_pos(x_solve);
+rigid_abs_pos(:,1)=rigid_abs_pos(:,1)-xA;
+rigid_abs_pos=1000*rigid_abs_pos;
+
+print('r30_delta18','-djpeg','-r600')
+save('r30_delta18_cal.mat','rigid_abs_pos')
+
 function r=myfunc_1(tangent_var,Delta1,Delta2)
 
     tangent_ratio=tangent_var(1);
