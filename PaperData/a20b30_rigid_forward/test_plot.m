@@ -21,6 +21,7 @@ title("节点1",'Color','blue','FontSize',14 )
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点x坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 0 15])
 
 
 subplot(4,2,2)
@@ -31,6 +32,7 @@ title("节点5",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点x坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 50 65])
 
 
 subplot(4,2,3)
@@ -41,6 +43,7 @@ title("节点2",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点x坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 0 15])
 
 
 subplot(4,2,4)
@@ -51,6 +54,7 @@ title("节点6",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点x坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 35 50])
 
 
 subplot(4,2,5)
@@ -61,6 +65,7 @@ title("节点3",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点x坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 0 20])
 
 
 subplot(4,2,6)
@@ -71,6 +76,8 @@ title("节点7",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点x坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 25 40])
+
 
 subplot(4,2,7)
 hold on
@@ -80,6 +87,7 @@ title("节点4",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点x坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 0 15])
 
 
 subplot(4,2,8)
@@ -90,6 +98,7 @@ title("节点8",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点x坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 10 25])
 
 
 set(gcf,'Position',[100 100 800 800])
@@ -119,6 +128,7 @@ title("节点1",'Color','blue','FontSize',14 )
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点y坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 20 35])
 
 subplot(4,2,2)
 hold on
@@ -128,6 +138,7 @@ title("节点5",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点y坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 35 50])
 
 subplot(4,2,3)
 hold on
@@ -137,6 +148,7 @@ title("节点2",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点y坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 45 60])
 
 subplot(4,2,4)
 hold on
@@ -146,6 +158,7 @@ title("节点6",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点y坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 65 80])
 
 subplot(4,2,5)
 hold on
@@ -155,6 +168,8 @@ title("节点3",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点y坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 70 85])
+
 
 subplot(4,2,6)
 hold on
@@ -164,6 +179,8 @@ title("节点7",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点y坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 95 110])
+
 
 subplot(4,2,7)
 hold on
@@ -173,6 +190,7 @@ title("节点4",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点y坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 100 115])
 
 subplot(4,2,8)
 hold on
@@ -182,6 +200,7 @@ title("节点8",'Color','blue','FontSize',14)
 xlabel('夹钳水平移动距离/mm')
 ylabel('节点y坐标/mm')
 legend('实验测量','理论计算','Location','NorthWest')
+axis([3 18 115 120])
 
 
 set(gcf,'Position',[100 100 800 800])
