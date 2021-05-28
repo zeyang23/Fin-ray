@@ -520,8 +520,53 @@ classdef finray_force < handle
                     plot([PA(1) PB(1)],[PA(2) PB(2)],'LineWidth',3)
                 end
             end
+            end
+            
+            function rigid_abs_pos=get_rigid_pos(obj,x)
+                thetaA=x(1:obj.nA);
+                thetaB=x(obj.nA+1:obj.nA+obj.nB);
+
+                obj.RodA.theta=thetaA;
+                obj.RodA.cal_pe;
+                obj.RodA.cal_posall;
+
+                hold on
+
+                obj.RodB.theta=thetaB;
+                obj.RodB.cal_pe;
+                obj.RodB.cal_posall;
+
+                    % »­³ö¸ÕÐÔÔ¼Êø
+                if obj.constraint_number==0
+                    error('no rigid constraints');
+
+                else
+                    rigid_abs_pos=zeros(obj.constraint_number,2);
+
+                    for i=1:obj.constraint_number
+                        obj.A_constraint_array(i).theta=thetaA(1:obj.constraint_index(i,2));
+                        obj.A_constraint_array(i).cal_pe;
+
+                        obj.B_constraint_array(i).theta=thetaB(1:obj.constraint_index(i,3));
+                        obj.B_constraint_array(i).cal_pe;
+
+                        pka=obj.A_constraint_array(i).pe;
+                        PA(1)=pka(1)*cos(obj.pA(3))-pka(2)*sin(obj.pA(3))+obj.pA(1);
+                        PA(2)=pka(1)*sin(obj.pA(3))+pka(2)*cos(obj.pA(3))+obj.pA(2);
+
+                        pkb=obj.B_constraint_array(i).pe;
+                        PB(1)=pkb(1)*cos(obj.pB(3))-pkb(2)*sin(obj.pB(3))+obj.pB(1);
+                        PB(2)=pkb(1)*sin(obj.pB(3))+pkb(2)*cos(obj.pB(3))+obj.pB(2);
+
+    %                     plot([PA(1) PB(1)],[PA(2) PB(2)],'LineWidth',3)
+
+                        rigid_abs_pos(i,:)=[PA(1) PA(2)];
+                        rigid_abs_pos(i+obj.constraint_number,:)=[PB(1) PB(2)];
+                    end
+                end
+                
+            end
             
             
         end
-    end
 end
