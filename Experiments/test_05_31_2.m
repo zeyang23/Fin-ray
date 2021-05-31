@@ -200,7 +200,7 @@ resnorm=norm(fval)
 %%
 
 figure
-FinrayA.plot_state(x_solve);
+FinrayA.plot_state_sr(x_solve(1:end-2));
 
 
 FinrayA.RodB.cal_posall;
