@@ -1,5 +1,8 @@
 % 标定弯曲传感器
 
+% 21-05-31
+% 应该使用正比例函数拟合，不应该用一次函数拟合
+
 clear
 clc
 
@@ -35,6 +38,8 @@ grid on
 y_1 = polyval(coff_1,volt1(:,2));
 plot(volt1(:,2),y_1,'--r','linewidth',1)
 
+coff_1_real=volt1(:,2)\volt1(:,1);
+
 
 %% 标定第II块弯曲传感器
 volt2 = [];
@@ -68,6 +73,9 @@ y_2 = polyval(coff_2,volt2(:,2));
 plot(volt2(:,2),y_2,'--g','linewidth',1)
 
 
+coff_2_real=volt2(:,2)\volt2(:,1);
+
+
 
 %% 标定第III块弯曲传感器
 volt3 = [];
@@ -99,3 +107,5 @@ hold on
 grid on
 y_3 = polyval(coff_3,volt3(:,2));
 plot(volt3(:,2),y_3,'--b','linewidth',1)
+
+coff_3_real=volt3(:,2)\volt3(:,1);
