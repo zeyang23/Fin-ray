@@ -100,7 +100,7 @@ classdef planar_nR < handle
             obj.Jacobian=J;
         end
         
-        function cal_Hessian(obj)
+        function [Hx,Hy]=cal_Hessian(obj)
             Hx=zeros(obj.n_seg);
             for i=1:obj.n_seg-1
                 temp=0;
@@ -142,6 +142,38 @@ classdef planar_nR < handle
             obj.Hessian_ye=Hy;
         end
         
+        
+        function [Hx,Hy]=cal_Hessian_new(obj)
+            
+            Hx=zeros(obj.n_seg);
+            Hy=zeros(obj.n_seg);
+            
+            length_xe=zeros(obj.n_seg,1);
+            length_ye=zeros(obj.n_seg,1);
+            
+            for i=1:obj.n_seg-1
+                length_xe(i)=obj.seg_length*cos(sum(obj.theta(1:i)));
+                length_ye(i)=obj.seg_length*sin(sum(obj.theta(1:i)));
+            end
+            length_xe(obj.n_seg)=1/2*obj.seg_length*cos(sum(obj.theta));
+            length_ye(obj.n_seg)=1/2*obj.seg_length*sin(sum(obj.theta));
+            
+            
+            Hx(1,1)=-sum(length_xe);
+            Hy(1,1)=-sum(length_ye);
+            for i=2:obj.n_seg
+                Hx(1:i,i)=-sum(length_xe(i:obj.n_seg))*ones(i,1);
+                Hx(i,1:i-1)=-sum(length_xe(i:obj.n_seg))*ones(1,i-1);
+                
+                Hy(1:i,i)=-sum(length_ye(i:obj.n_seg))*ones(i,1);
+                Hy(i,1:i-1)=-sum(length_ye(i:obj.n_seg))*ones(1,i-1);
+            end
+            
+            obj.Hessian_xe=Hx;
+            obj.Hessian_ye=Hy;
+        end
+        
+        
         function cal_partial(obj)
             % 注意，调用这个函数前记得先更新Hessian矩阵
             
@@ -158,7 +190,8 @@ classdef planar_nR < handle
         function update(obj)
             obj.cal_pe;
             obj.cal_Jacobian;
-            obj.cal_Hessian;
+%             obj.cal_Hessian;
+            obj.cal_Hessian_new;
             obj.cal_partial;
         end
         
