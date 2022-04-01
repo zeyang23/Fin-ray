@@ -24,7 +24,7 @@ This article focuses on a kind of adaptive soft gripper—Fin-ray. Although Fin-
 
 ![物体刚度辨识](https://user-images.githubusercontent.com/50078363/161177139-66adf883-8928-4189-a28b-0f35089f0ff3.gif)
 
-![image](https://user-images.githubusercontent.com/50078363/161177268-df881c1c-5069-4ca1-bc75-b31d9d0e9ead.png)
+![image](https://user-images.githubusercontent.com/50078363/161177617-05806745-7786-432d-836f-3f230e70ddba.png)
 
 ### Shape reconstruction
 
