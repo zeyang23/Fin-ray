@@ -24,7 +24,7 @@ This article focuses on a kind of adaptive soft gripper—Fin-ray. Although Fin-
 
 ![物体刚度辨识](https://user-images.githubusercontent.com/50078363/161177139-66adf883-8928-4189-a28b-0f35089f0ff3.gif)
 
-![image](https://user-images.githubusercontent.com/50078363/161177617-05806745-7786-432d-836f-3f230e70ddba.png)
+![image](https://user-images.githubusercontent.com/50078363/173811446-4f1083df-a74e-4e98-b665-8cb4d2de826c.png)
 
 ### Shape reconstruction
 
@@ -41,7 +41,7 @@ However, the model based on Cosserat Rod Theory also has some advantages.
 For example, it can deal with Fin-ray fingers with soft crossbeams, which is difficult for Principal Axes Decompoistion to solve.
 It deals with the distributed load better than Principal Axes Decompoistion, which is an inherent discrete method.
 
-![image](https://user-images.githubusercontent.com/50078363/161176799-b5008c52-3ccb-4b0c-a320-7bd894ad4293.png)
+![image](https://user-images.githubusercontent.com/50078363/173811603-fd2f8550-5524-4726-a7a1-a32451226329.png)
 
 Besides, if we want to simulate the contact process more accurately, the line contact approximation is preferred rather than point contact.
 
